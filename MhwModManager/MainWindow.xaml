@@ -42,9 +42,6 @@
             </Button>
         </Grid>
         <ListBox Name="modListBox" Margin="3" Grid.Row="1">
-            <CheckBox Content="TestMod 1" />
-            <CheckBox Content="TestMod 2" />
-
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="addModContext" Header="Add Mod" Click="addMod_Click">
