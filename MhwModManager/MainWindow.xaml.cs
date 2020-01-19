@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Win32;
+using System.IO.Compression;
 
 namespace MhwModManager
 {
@@ -48,13 +50,29 @@ namespace MhwModManager
 
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
+            var dialog = new OpenFileDialog();
+            dialog.DefaultExt = "zip";
+            dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar";
+            if (dialog.ShowDialog() == true)
+            {
+                ZipFile.ExtractToDirectory(dialog.FileName, "mods/tmp");
+                foreach (var dir in Directory.GetDirectories("mods/tmp"))
+                {
+                    if (dir.Contains("nativePC"))
+                    {
+                        var name = dialog.FileName.Split('\\');
+                        Directory.Move(dir, @"mods\" + name[name.GetLength(0) - 1].Split('.')[0]);
+                        Directory.Delete("mods/tmp");
+                    }
+                }
+            }
             UpdateModsList();
         }
 
         private void remMod_Click(object sender, RoutedEventArgs e)
         {
             foreach (var mod in modListBox.SelectedItems)
-                Directory.Delete(@"mods\" + (mod as CheckBox).Content.ToString());
+                Directory.Delete(@"mods\" + (mod as CheckBox).Content.ToString() + @"\", true);
             UpdateModsList();
         }
 
