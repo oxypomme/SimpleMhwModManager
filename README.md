@@ -1,9 +1,9 @@
-# MHW Mod Manager
+# Simple MHW Mod Manager
 
-[![version](https://img.shields.io/github/v/release/oxypomme/MhwModManager?label=Version&style=for-the-badge)](https://shields.io)
-<a href="https://forthebadge.com/"> [![downloads](https://img.shields.io/github/downloads/oxypomme/MhwModManager/total?style=for-the-badge)](https://shields.io) <img src="https://forthebadge.com/images/badges/made-with-c-sharp.svg" alt="forthebadge" height="28"/></a>
+[![version](https://img.shields.io/github/v/release/oxypomme/SimpleMhwModManager?label=Version&style=for-the-badge)](https://shields.io)
+<a href="https://forthebadge.com/"> [![downloads](https://img.shields.io/github/downloads/oxypomme/SimpleMhwModManager/total?style=for-the-badge)](https://shields.io) <img src="https://forthebadge.com/images/badges/made-with-c-sharp.svg" alt="forthebadge" height="28"/></a>
 
-> MHW Mod Manager, or MHWMM, or WhateverYouLike is a simple mod manager for Monster Hunter World
+> Simple MHW Mod Manager, or SMHWMM, or WhateverYouLike is a simple mod manager for Monster Hunter World
 
 ---
 
@@ -33,4 +33,4 @@ A button to add a mod, a second one to delete a mod.
 
 Thanks to all of [contributors](https://github.com/oxypomme/DofLogC/contributors). Aka me atm.
 
-[![license](https://img.shields.io/github/license/oxypomme/MhwModManager?style=for-the-badge)](https://github.com/oxypomme/DofLogC/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/oxypomme/SimpleMhwModManager?style=for-the-badge)](https://github.com/oxypomme/DofLogC/blob/master/LICENSE)
