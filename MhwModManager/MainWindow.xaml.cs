@@ -11,7 +11,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Win32;
@@ -53,6 +52,7 @@ namespace MhwModManager
                     Content = mod
                 };
                 modItem.Checked += itemChecked;
+                modItem.Unchecked += itemChecked;
 
                 if (listContents.Contains((mod, true)))
                 {
@@ -116,6 +116,81 @@ namespace MhwModManager
 
         private void itemChecked(object sender, RoutedEventArgs e)
         {
+            if ((sender as CheckBox).IsChecked.Value == true)
+                DirectoryCopy("mods/" + (sender as CheckBox).Content.ToString(), App.Settings.settings.mhw_path + "\\nativePC", true);
+            else
+            {
+                DeleteMod("mods/" + (sender as CheckBox).Content.ToString(), App.Settings.settings.mhw_path + "\\nativePC\\");
+                CleanNativePC(App.Settings.settings.mhw_path + "\\nativePC\\");
+            }
+        }
+
+        // Credits to https://docs.microsoft.com/fr-fr/dotnet/standard/io/how-to-copy-directories
+        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(destDirName))
+                Directory.CreateDirectory(destDirName);
+
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string temppath = Path.Combine(destDirName, file.Name);
+                if (!File.Exists(temppath))
+                    file.CopyTo(temppath, false);
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+            if (copySubDirs)
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string temppath = Path.Combine(destDirName, subdir.Name);
+                    DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+                }
+        }
+
+        private static void DeleteMod(string modPath, string folder)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo modDir = new DirectoryInfo(modPath);
+            DirectoryInfo[] modDirs = modDir.GetDirectories();
+
+            // Get the files in the directory
+            FileInfo[] modFiles = modDir.GetFiles();
+
+            DirectoryInfo dir = new DirectoryInfo(folder);
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            FileInfo[] files = dir.GetFiles();
+
+            foreach (FileInfo modfile in modFiles)
+                foreach (FileInfo file in files)
+                    if (modfile.Name == file.Name)
+                    {
+                        file.Delete();
+                        break;
+                    }
+
+            foreach (DirectoryInfo submoddir in modDirs)
+                foreach (DirectoryInfo subdir in dirs)
+                    DeleteMod(submoddir.FullName, subdir.FullName);
+        }
+
+        private static void CleanNativePC(string folder)
+        {
+            DirectoryInfo dir = new DirectoryInfo(folder);
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                CleanNativePC(subdir.FullName);
+                if (!Directory.EnumerateFileSystemEntries(subdir.FullName).Any())
+                    Directory.Delete(subdir.FullName);
+            }
         }
     }
 }
