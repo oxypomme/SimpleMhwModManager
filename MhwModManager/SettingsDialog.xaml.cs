@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 
@@ -21,6 +22,7 @@ namespace MhwModManager
         {
             public bool dark_mode;
             public string mhw_path;
+            public List<bool> mod_installed;
         }
 
         public Settings settings = new Settings();
@@ -33,6 +35,7 @@ namespace MhwModManager
 
                 settings.dark_mode = false;
                 settings.mhw_path = @"C:\Program Files (x86)\Steam\steamapps\common\Monster Hunter World";
+                settings.mod_installed = new List<bool>();
 
                 ParseSettingsJSON();
             }
@@ -47,6 +50,7 @@ namespace MhwModManager
 
                 settings.dark_mode = sets.settings.dark_mode;
                 settings.mhw_path = sets.settings.mhw_path;
+                settings.mod_installed = sets.settings.mod_installed;
             }
         }
 

@@ -38,29 +38,29 @@ namespace MhwModManager
         {
             var listContents = new List<(string, bool)>();
 
-            foreach (var item in modListBox.Items)
-            {
-                listContents.Add(((item as CheckBox).Content.ToString(), (item as CheckBox).IsChecked.Value));
-            }
-
             modListBox.Items.Clear();
 
+            int i = 0;
             foreach (var mod in App.GetMods())
             {
                 var modItem = new CheckBox
                 {
+                    Tag = i,
                     Content = mod
                 };
                 modItem.Checked += itemChecked;
                 modItem.Unchecked += itemChecked;
 
-                if (listContents.Contains((mod, true)))
-                {
-                    modItem.IsChecked = true;
-                }
+                if (App.Settings.settings.mod_installed.Count <= i)
+                    App.Settings.settings.mod_installed.Add(false);
+                else
+                    modItem.IsChecked = App.Settings.settings.mod_installed[i];
 
                 modListBox.Items.Add(modItem);
+
+                i++;
             }
+            App.Settings.ParseSettingsJSON();
         }
 
         private void addMod_Click(object sender, RoutedEventArgs e)
@@ -117,12 +117,17 @@ namespace MhwModManager
         private void itemChecked(object sender, RoutedEventArgs e)
         {
             if ((sender as CheckBox).IsChecked.Value == true)
+            {
                 DirectoryCopy("mods/" + (sender as CheckBox).Content.ToString(), App.Settings.settings.mhw_path + "\\nativePC", true);
+                App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = true;
+            }
             else
             {
                 DeleteMod("mods/" + (sender as CheckBox).Content.ToString(), App.Settings.settings.mhw_path + "\\nativePC\\");
                 CleanNativePC(App.Settings.settings.mhw_path + "\\nativePC\\");
+                App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = false;
             }
+            App.Settings.ParseSettingsJSON();
         }
 
         // Credits to https://docs.microsoft.com/fr-fr/dotnet/standard/io/how-to-copy-directories
