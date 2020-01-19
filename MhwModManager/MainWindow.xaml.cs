@@ -66,20 +66,23 @@ namespace MhwModManager
             var dialog = new OpenFileDialog();
             dialog.DefaultExt = "zip";
             dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar";
+            var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
+            if (!Directory.Exists(tmpFolder))
+                Directory.CreateDirectory(tmpFolder);
             if (dialog.ShowDialog() == true)
             {
-                ZipFile.ExtractToDirectory(dialog.FileName, "mods/tmp");
-                foreach (var dir in Directory.GetDirectories("mods/tmp"))
+                ZipFile.ExtractToDirectory(dialog.FileName, Path.GetTempPath());
+                foreach (var dir in Directory.GetDirectories(tmpFolder))
                 {
                     if (dir.Contains("nativePC"))
                     {
                         var name = dialog.FileName.Split('\\');
                         var modName = name[name.GetLength(0) - 1].Split('.')[0];
-                        if (!Directory.Exists("mods/" + modName))
-                            Directory.Move(dir, @"mods\" + modName);
+                        if (!Directory.Exists(Path.Combine(App.ModsPath, modName)))
+                            Directory.Move(dir, Path.Combine(App.ModsPath, modName));
                         else
                             MessageBox.Show("This mod is already installed", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Directory.Delete("mods/tmp/", true);
+                        Directory.Delete(tmpFolder, true);
                     }
                 }
             }
