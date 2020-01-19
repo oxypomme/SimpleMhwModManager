@@ -71,7 +71,7 @@ namespace MhwModManager
                 Directory.CreateDirectory(tmpFolder);
             if (dialog.ShowDialog() == true)
             {
-                ZipFile.ExtractToDirectory(dialog.FileName, Path.GetTempPath());
+                ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
                 foreach (var dir in Directory.GetDirectories(tmpFolder))
                 {
                     if (dir.Contains("nativePC"))
