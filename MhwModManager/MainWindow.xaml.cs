@@ -36,8 +36,10 @@ namespace MhwModManager
             modListBox.Items.Clear();
             foreach (var mod in App.GetMods())
             {
-                var modItem = new CheckBox();
-                modItem.Content = mod;
+                var modItem = new CheckBox
+                {
+                    Content = mod
+                };
                 modListBox.Items.Add(modItem);
             }
         }
