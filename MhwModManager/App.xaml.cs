@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
+using WinForms = System.Windows.Forms;
 
 namespace MhwModManager
 {
@@ -14,8 +15,23 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
+        public static Setting Settings = new Setting();
+
         public App()
         {
+            Settings.GenConfig();
+            if (!Directory.Exists(Settings.settings.mhw_path))
+            {
+                MessageBox.Show("The path to MHW is wrong, please correct it !", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                var dialog = new WinForms.FolderBrowserDialog();
+                if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                {
+                    Settings.settings.mhw_path = dialog.SelectedPath;
+                    Settings.ParseSettingsJSON();
+                }
+                else
+                    Environment.Exit(0);
+            }
         }
 
         public static List<string> GetMods()

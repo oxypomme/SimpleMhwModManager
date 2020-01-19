@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
 using System.IO;
 
 namespace MhwModManager
@@ -24,6 +25,7 @@ namespace MhwModManager
         public MainWindow()
         {
             InitializeComponent();
+
             UpdateModsList();
 
 #if RELEASE
@@ -58,6 +60,7 @@ namespace MhwModManager
 
         private void startGame_Click(object sender, RoutedEventArgs e)
         {
+            Process.Start(App.Settings.settings.mhw_path + "\\MonsterHunterWorld.exe");
         }
 
         private void refreshMod_Click(object sender, RoutedEventArgs e)
@@ -67,7 +70,7 @@ namespace MhwModManager
 
         private void webMod_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://www.nexusmods.com/monsterhunterworld");
+            Process.Start("https://www.nexusmods.com/monsterhunterworld");
         }
 
         private void settingsMod_Click(object sender, RoutedEventArgs e)
