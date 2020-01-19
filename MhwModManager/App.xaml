@@ -4,6 +4,19 @@
              xmlns:local="clr-namespace:MhwModManager"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu>
+                        <MenuItem Name="remModContext" Header="Remove Mod" Click="remMod_Click">
+                            <MenuItem.Icon>
+                                <Image Source="icons/remove.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

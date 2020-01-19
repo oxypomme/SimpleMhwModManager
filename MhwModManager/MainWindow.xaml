@@ -49,11 +49,6 @@
                             <Image Source="icons/add.png" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="remModContext" Header="Remove Mod" Click="remMod_Click">
-                        <MenuItem.Icon>
-                            <Image Source="icons/remove.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>
