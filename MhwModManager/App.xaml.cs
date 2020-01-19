@@ -61,10 +61,5 @@ namespace MhwModManager
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/MhwModManager/releases");
             }
         }
-
-        private void ListBoxItem_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            MessageBox.Show("test");
-        }
     }
 }

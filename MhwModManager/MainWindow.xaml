@@ -42,12 +42,8 @@
             </Button>
         </Grid>
         <ListBox Name="modListBox" Margin="3" Grid.Row="1">
-            <ListBoxItem>
-                <CheckBox Content="TestMod 1" />
-            </ListBoxItem>
-            <ListBoxItem>
-                <CheckBox Content="TestMod 2" />
-            </ListBoxItem>
+            <CheckBox Content="TestMod 1" />
+            <CheckBox Content="TestMod 2" />
 
             <ListBox.ContextMenu>
                 <ContextMenu>

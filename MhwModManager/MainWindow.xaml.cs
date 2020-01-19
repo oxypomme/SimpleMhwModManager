@@ -37,13 +37,28 @@ namespace MhwModManager
 
         private void UpdateModsList()
         {
+            var listContents = new List<(string, bool)>();
+
+            foreach (var item in modListBox.Items)
+            {
+                listContents.Add(((item as CheckBox).Content.ToString(), (item as CheckBox).IsChecked.Value));
+            }
+
             modListBox.Items.Clear();
+
             foreach (var mod in App.GetMods())
             {
                 var modItem = new CheckBox
                 {
                     Content = mod
                 };
+                modItem.Checked += itemChecked;
+
+                if (listContents.Contains((mod, true)))
+                {
+                    modItem.IsChecked = true;
+                }
+
                 modListBox.Items.Add(modItem);
             }
         }
@@ -61,8 +76,12 @@ namespace MhwModManager
                     if (dir.Contains("nativePC"))
                     {
                         var name = dialog.FileName.Split('\\');
-                        Directory.Move(dir, @"mods\" + name[name.GetLength(0) - 1].Split('.')[0]);
-                        Directory.Delete("mods/tmp");
+                        var modName = name[name.GetLength(0) - 1].Split('.')[0];
+                        if (!Directory.Exists("mods/" + modName))
+                            Directory.Move(dir, @"mods\" + modName);
+                        else
+                            MessageBox.Show("This mod is already installed", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                        Directory.Delete("mods/tmp/", true);
                     }
                 }
             }
@@ -92,6 +111,10 @@ namespace MhwModManager
         }
 
         private void settingsMod_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void itemChecked(object sender, RoutedEventArgs e)
         {
         }
     }
