@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.IO;
 
 namespace MhwModManager
 {
@@ -13,6 +14,19 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
+        public List<string> modList { get; set; }
+
+        public App()
+        {
+            if (!Directory.Exists("mods"))
+                Directory.CreateDirectory("mods");
+
+            var modFolder = new DirectoryInfo("mods");
+
+            foreach (var mod in modFolder.GetDirectories())
+                modList.Add(mod.Name);
+        }
+
         public async static void Updater()
         {
             /* Credits to WildGoat07 : https://github.com/WildGoat07 */
