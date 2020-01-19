@@ -26,7 +26,7 @@
                     <Image Source="icons/remove.png" />
                 </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                <Button Name="refreshMod" Click="refreshMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
+                <Button Name="refreshMod" Click="refreshMod_Click" ToolTip="Update the modlist" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/refresh.png" />
                 </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
