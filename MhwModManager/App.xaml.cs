@@ -60,7 +60,7 @@ namespace MhwModManager
             {
                 var result = MessageBox.Show("A new version is available, do you want to download it now ?", "MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
-                    System.Diagnostics.Process.Start("https://github.com/oxypomme/MhwModManager/releases");
+                    System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
             }
         }
     }
