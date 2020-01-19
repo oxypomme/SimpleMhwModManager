@@ -36,8 +36,6 @@ namespace MhwModManager
 
         private void UpdateModsList()
         {
-            var listContents = new List<(string, bool)>();
-
             modListBox.Items.Clear();
 
             int i = 0;
