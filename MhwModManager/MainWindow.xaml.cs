@@ -23,29 +23,41 @@ namespace MhwModManager
         public MainWindow()
         {
             InitializeComponent();
-
-            foreach (var mod in App.GetMods())
-            {
-                var modItem = new CheckBox();
-                modItem.Content = mod;
-                modListBox.Items.Add(modItem);
-            }
+            UpdateModsList();
 
 #if RELEASE
             App.Updater();
 #endif
         }
 
+        private void UpdateModsList()
+        {
+            modListBox.Items.Clear();
+            foreach (var mod in App.GetMods())
+            {
+                var modItem = new CheckBox();
+                modItem.Content = mod;
+                modListBox.Items.Add(modItem);
+            }
+        }
+
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
+            UpdateModsList();
         }
 
         private void remMod_Click(object sender, RoutedEventArgs e)
         {
+            UpdateModsList();
         }
 
         private void startGame_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void refreshMod_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateModsList();
         }
     }
 }
