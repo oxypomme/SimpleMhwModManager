@@ -33,6 +33,9 @@
                 <Button Name="webMod" Click="webMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/web.png" />
                 </Button>
+                <Button Name="settingsMod" Click="settingsMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
+                    <Image Source="icons/settings.png" />
+                </Button>
             </StackPanel>
             <Button Name="startGame" Click="startGame_Click" ToolTip="Start game" Width="24" Margin="3" Grid.Column="2">
                 <Image Source="icons/launch.png" />

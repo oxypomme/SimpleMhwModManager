@@ -67,5 +67,9 @@ namespace MhwModManager
         {
             System.Diagnostics.Process.Start("https://www.nexusmods.com/monsterhunterworld");
         }
+
+        private void settingsMod_Click(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }
