@@ -40,7 +40,7 @@ namespace MhwModManager
             var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             if (new Version(lastRelease.TagName) > current)
             {
-                var result = MessageBox.Show("Une nouvelle version est disponible, voulez-vous la télécharger ?", "MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                var result = MessageBox.Show("A new version is available, do you want to download it now ?", "MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/MhwModManager/releases");
             }
