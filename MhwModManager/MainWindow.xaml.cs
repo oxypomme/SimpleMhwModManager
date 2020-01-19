@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace MhwModManager
 {
@@ -48,6 +49,8 @@ namespace MhwModManager
 
         private void remMod_Click(object sender, RoutedEventArgs e)
         {
+            foreach (var mod in modListBox.SelectedItems)
+                Directory.Delete(@"mods\" + (mod as CheckBox).Content.ToString());
             UpdateModsList();
         }
 
@@ -58,6 +61,10 @@ namespace MhwModManager
         private void refreshMod_Click(object sender, RoutedEventArgs e)
         {
             UpdateModsList();
+        }
+
+        private void webMod_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

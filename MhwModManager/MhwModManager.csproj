@@ -108,5 +108,8 @@
   <ItemGroup>
     <Resource Include="icons\refresh.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icons\web.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

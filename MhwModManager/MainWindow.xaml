@@ -19,18 +19,22 @@
             </Grid.ColumnDefinitions>
             <Image Width="16" Grid.Column="0" />
             <StackPanel Orientation="Horizontal" Margin="3" Grid.Column="1">
-                <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="16" HorizontalAlignment="Left">
+                <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/add.png" />
                 </Button>
-                <Button Name="remMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="16" HorizontalAlignment="Left">
+                <Button Name="remMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/remove.png" />
                 </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                <Button Name="refreshMod" Click="refreshMod_Click" ToolTip="Remove selected Mod" Width="16" HorizontalAlignment="Left">
+                <Button Name="refreshMod" Click="refreshMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/refresh.png" />
                 </Button>
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button Name="webMod" Click="webMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
+                    <Image Source="icons/web.png" />
+                </Button>
             </StackPanel>
-            <Button Name="startGame" Click="startGame_Click" ToolTip="Start game" Width="16" Margin="3" Grid.Column="2">
+            <Button Name="startGame" Click="startGame_Click" ToolTip="Start game" Width="24" Margin="3" Grid.Column="2">
                 <Image Source="icons/launch.png" />
             </Button>
         </Grid>
