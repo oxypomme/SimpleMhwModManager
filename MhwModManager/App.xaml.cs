@@ -16,6 +16,7 @@ namespace MhwModManager
     public partial class App : Application
     {
         public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SMMM");
+        public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
 
@@ -39,10 +40,11 @@ namespace MhwModManager
         public static List<string> GetMods()
         {
             var modList = new List<string>();
-            var modFolder = new DirectoryInfo("mods");
 
-            if (!Directory.Exists("mods"))
-                Directory.CreateDirectory("mods");
+            if (!Directory.Exists(ModsPath))
+                Directory.CreateDirectory(ModsPath);
+
+            var modFolder = new DirectoryInfo(ModsPath);
 
             foreach (var mod in modFolder.GetDirectories())
                 modList.Add(mod.Name);
