@@ -24,6 +24,13 @@ namespace MhwModManager
         {
             InitializeComponent();
 
+            foreach (var mod in App.GetMods())
+            {
+                var modItem = new CheckBox();
+                modItem.Content = mod;
+                modListBox.Items.Add(modItem);
+            }
+
 #if RELEASE
             App.Updater();
 #endif

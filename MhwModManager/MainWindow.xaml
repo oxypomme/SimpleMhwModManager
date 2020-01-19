@@ -30,7 +30,7 @@
                 <Image Source="icons/launch.png" />
             </Button>
         </Grid>
-        <ListBox Name="modList" Margin="3" Grid.Row="1">
+        <ListBox Name="modListBox" Margin="3" Grid.Row="1">
             <ListBoxItem>
                 <CheckBox Content="TestMod 1" />
             </ListBoxItem>

@@ -14,17 +14,22 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
-        public List<string> modList { get; set; }
-
         public App()
         {
+        }
+
+        public static List<string> GetMods()
+        {
+            var modList = new List<string>();
+            var modFolder = new DirectoryInfo("mods");
+
             if (!Directory.Exists("mods"))
                 Directory.CreateDirectory("mods");
 
-            var modFolder = new DirectoryInfo("mods");
-
             foreach (var mod in modFolder.GetDirectories())
                 modList.Add(mod.Name);
+
+            return modList;
         }
 
         public async static void Updater()
