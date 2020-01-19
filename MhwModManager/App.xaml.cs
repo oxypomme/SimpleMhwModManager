@@ -25,7 +25,7 @@ namespace MhwModManager
             Settings.GenConfig();
             if (!Directory.Exists(Settings.settings.mhw_path))
             {
-                MessageBox.Show("The path to MHW is wrong, please correct it !", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 var dialog = new WinForms.FolderBrowserDialog();
                 if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                 {
