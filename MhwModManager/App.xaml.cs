@@ -15,7 +15,9 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
+        public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SMMM");
         public static Setting Settings = new Setting();
+        public static string SettingsPath = Path.Combine(AppData, "settings.json");
 
         public App()
         {
