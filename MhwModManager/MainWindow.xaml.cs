@@ -23,6 +23,22 @@ namespace MhwModManager
         public MainWindow()
         {
             InitializeComponent();
+
+#if RELEASE
+            App.Updater();
+#endif
+        }
+
+        private void addMod_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void remMod_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void startGame_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
