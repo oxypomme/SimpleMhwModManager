@@ -78,7 +78,7 @@ namespace MhwModManager
                         if (!Directory.Exists("mods/" + modName))
                             Directory.Move(dir, @"mods\" + modName);
                         else
-                            MessageBox.Show("This mod is already installed", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                         Directory.Delete("mods/tmp/", true);
                     }
                 }

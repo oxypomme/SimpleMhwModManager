@@ -22,7 +22,7 @@ namespace MhwModManager
             Settings.GenConfig();
             if (!Directory.Exists(Settings.settings.mhw_path))
             {
-                MessageBox.Show("The path to MHW is wrong, please correct it !", "MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("The path to MHW is wrong, please correct it !", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 var dialog = new WinForms.FolderBrowserDialog();
                 if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                 {
@@ -51,12 +51,12 @@ namespace MhwModManager
         public async static void Updater()
         {
             /* Credits to WildGoat07 : https://github.com/WildGoat07 */
-            var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("MhwModManager"));
+            var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("SimpleMhwModManager"));
             var lastRelease = await github.Repository.Release.GetLatest(234864718);
             var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             if (new Version(lastRelease.TagName) > current)
             {
-                var result = MessageBox.Show("A new version is available, do you want to download it now ?", "MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                var result = MessageBox.Show("A new version is available, do you want to download it now ?", "Simple MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/MhwModManager/releases");
             }
