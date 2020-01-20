@@ -36,6 +36,10 @@ namespace MhwModManager
         private void darkmodeCB_Checked(object sender, RoutedEventArgs e)
         {
             App.Settings.settings.dark_mode = darkmodeCB.IsChecked.Value;
+            if (App.Settings.settings.dark_mode)
+                darkmodeCB.Content = "Enabled";
+            else
+                darkmodeCB.Content = "Disabled";
         }
 
         private void browseBTN_Click(object sender, RoutedEventArgs e)

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Win32;
+using WinForms = System.Windows.Forms;
 using System.IO.Compression;
 
 namespace MhwModManager
@@ -63,10 +63,10 @@ namespace MhwModManager
 
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog();
+            var dialog = new WinForms.OpenFileDialog();
             dialog.DefaultExt = "zip";
             dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar|all files|*";
-            if (dialog.ShowDialog() == true)
+            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
             {
                 var name = dialog.FileName.Split('\\');
                 ZipFile.ExtractToDirectory(dialog.FileName, "mods/tmp");
