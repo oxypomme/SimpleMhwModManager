@@ -64,15 +64,18 @@ namespace MhwModManager
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new WinForms.OpenFileDialog();
+            var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
+            if (!Directory.Exists(tmpFolder))
+                Directory.CreateDirectory(tmpFolder);
             dialog.DefaultExt = "zip";
             dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar|all files|*";
             if (dialog.ShowDialog() == WinForms.DialogResult.OK)
             {
                 var name = dialog.FileName.Split('\\');
-                ZipFile.ExtractToDirectory(dialog.FileName, "mods/tmp");
-                if (!InstallMod("mods/tmp", name))
+                ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
+                if (!InstallMod(tmpFolder, name))
                     MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                Directory.Delete("mods/tmp/", true);
+                Directory.Delete(tmpFolder, true);
                 var mods = App.GetMods();
                 for (int i = 0; i < mods.Count; i++)
                 {
@@ -108,7 +111,7 @@ namespace MhwModManager
         {
             foreach (var mod in modListBox.SelectedItems)
             {
-                Directory.Delete(@"mods\" + (mod as CheckBox).Content.ToString() + @"\", true);
+                Directory.Delete(Path.Combine(App.ModsPath, (mod as CheckBox).Content.ToString()), true);
                 App.Settings.settings.mod_installed.RemoveAt(int.Parse((mod as CheckBox).Tag.ToString()));
             }
             UpdateModsList();
@@ -116,7 +119,7 @@ namespace MhwModManager
 
         private void startGame_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(App.Settings.settings.mhw_path + "\\MonsterHunterWorld.exe");
+            Process.Start(Path.Combine(App.Settings.settings.mhw_path, "MonsterHunterWorld.exe"));
         }
 
         private void refreshMod_Click(object sender, RoutedEventArgs e)
@@ -139,13 +142,13 @@ namespace MhwModManager
         {
             if ((sender as CheckBox).IsChecked.Value == true)
             {
-                DirectoryCopy("mods/" + (sender as CheckBox).Content.ToString(), App.Settings.settings.mhw_path + "\\nativePC", true);
+                DirectoryCopy(Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString()), Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
                 App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = true;
             }
             else
             {
-                DeleteMod("mods/" + (sender as CheckBox).Content.ToString(), App.Settings.settings.mhw_path + "\\nativePC\\");
-                CleanNativePC(App.Settings.settings.mhw_path + "\\nativePC\\");
+                DeleteMod(Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString()), Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                CleanNativePC(Path.Combine(App.Settings.settings.mhw_path + "nativePC"));
                 App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = false;
             }
             App.Settings.ParseSettingsJSON();

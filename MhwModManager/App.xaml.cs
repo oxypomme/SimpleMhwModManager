@@ -15,14 +15,17 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
+        public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SMMM");
+        public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
+        public static string SettingsPath = Path.Combine(AppData, "settings.json");
 
         public App()
         {
             Settings.GenConfig();
             if (!Directory.Exists(Settings.settings.mhw_path))
             {
-                MessageBox.Show("The path to MHW is wrong, please correct it !", "SMMM", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 var dialog = new WinForms.FolderBrowserDialog();
                 if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                 {
@@ -37,10 +40,11 @@ namespace MhwModManager
         public static List<string> GetMods()
         {
             var modList = new List<string>();
-            var modFolder = new DirectoryInfo("mods");
 
-            if (!Directory.Exists("mods"))
-                Directory.CreateDirectory("mods");
+            if (!Directory.Exists(ModsPath))
+                Directory.CreateDirectory(ModsPath);
+
+            var modFolder = new DirectoryInfo(ModsPath);
 
             foreach (var mod in modFolder.GetDirectories())
                 modList.Add(mod.Name);
@@ -58,7 +62,7 @@ namespace MhwModManager
             {
                 var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
-                    System.Diagnostics.Process.Start("https://github.com/oxypomme/MhwModManager/releases");
+                    System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
             }
         }
     }
