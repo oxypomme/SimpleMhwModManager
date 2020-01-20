@@ -92,6 +92,7 @@ namespace MhwModManager
         {
             InitializeComponent();
             InitializeSettings();
+            versionLbl.Content = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         }
 
         private void browseBTN_Click(object sender, RoutedEventArgs e)
