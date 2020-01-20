@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Win32;
+using WinForms = System.Windows.Forms;
 using System.IO.Compression;
 
 namespace MhwModManager
@@ -43,7 +43,7 @@ namespace MhwModManager
             {
                 var modItem = new CheckBox
                 {
-                    Tag = i,
+                    Tag = i, //Tag is the id of the checkbox and the mod
                     Content = mod
                 };
                 modItem.Checked += itemChecked;
@@ -63,36 +63,55 @@ namespace MhwModManager
 
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog();
-            dialog.DefaultExt = "zip";
-            dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar";
+            var dialog = new WinForms.OpenFileDialog();
             var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
             if (!Directory.Exists(tmpFolder))
                 Directory.CreateDirectory(tmpFolder);
-            if (dialog.ShowDialog() == true)
+            dialog.DefaultExt = "zip";
+            dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar|all files|*";
+            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
             {
+                var name = dialog.FileName.Split('\\');
                 ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
-                foreach (var dir in Directory.GetDirectories(tmpFolder))
+                if (!InstallMod(tmpFolder, name))
+                    MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                Directory.Delete(tmpFolder, true);
+                var mods = App.GetMods();
+                for (int i = 0; i < mods.Count; i++)
                 {
-                    if (dir.Contains("nativePC"))
-                    {
-                        var name = dialog.FileName.Split('\\');
-                        var modName = name[name.GetLength(0) - 1].Split('.')[0];
-                        if (!Directory.Exists(Path.Combine(App.ModsPath, modName)))
-                            Directory.Move(dir, Path.Combine(App.ModsPath, modName));
-                        else
-                            MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Directory.Delete(tmpFolder, true);
-                    }
+                    if (mods[i].Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                        App.Settings.settings.mod_installed.Insert(i, false);
                 }
             }
             UpdateModsList();
+        }
+
+        private bool InstallMod(string path, string[] name)
+        {
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                if (dir.Contains("nativePC"))
+                {
+                    var modName = name[name.GetLength(0) - 1].Split('.')[0];
+                    if (!Directory.Exists("mods/" + modName))
+                        Directory.Move(dir, @"mods\" + modName);
+                    else
+                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
+                else
+                {
+                    InstallMod(dir, name);
+                }
+            }
+            return false;
         }
 
         private void remMod_Click(object sender, RoutedEventArgs e)
         {
             foreach (var mod in modListBox.SelectedItems)
                 Directory.Delete(Path.Combine(App.ModsPath, (mod as CheckBox).Content.ToString()), true);
+                App.Settings.settings.mod_installed.RemoveAt(int.Parse((mod as CheckBox).Tag.ToString()));
             UpdateModsList();
         }
 
@@ -113,6 +132,8 @@ namespace MhwModManager
 
         private void settingsMod_Click(object sender, RoutedEventArgs e)
         {
+            var settingsWindow = new SettingsDialog();
+            settingsWindow.ShowDialog();
         }
 
         private void itemChecked(object sender, RoutedEventArgs e)
