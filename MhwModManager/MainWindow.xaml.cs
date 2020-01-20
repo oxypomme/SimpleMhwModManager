@@ -48,6 +48,10 @@ namespace MhwModManager
                 };
                 modItem.Checked += itemChecked;
                 modItem.Unchecked += itemChecked;
+                Style style = Application.Current.FindResource("CheckBoxListItem") as Style;
+                modItem.Style = style;
+                (modItem.ContextMenu.Items[0] as MenuItem).Click -= remModContext_Click;
+                (modItem.ContextMenu.Items[0] as MenuItem).Click += remModContext_Click;
 
                 if (App.Settings.settings.mod_installed.Count <= i)
                     App.Settings.settings.mod_installed.Add(false);
@@ -93,8 +97,8 @@ namespace MhwModManager
                 if (dir.Contains("nativePC"))
                 {
                     var modName = name[name.GetLength(0) - 1].Split('.')[0];
-                    if (!Directory.Exists("mods/" + modName))
-                        Directory.Move(dir, @"mods\" + modName);
+                    if (!Directory.Exists(Path.Combine(App.ModsPath, modName)))
+                        Directory.Move(dir, Path.Combine(App.ModsPath, modName));
                     else
                         MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                     return true;
@@ -148,7 +152,7 @@ namespace MhwModManager
             else
             {
                 DeleteMod(Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString()), Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                CleanNativePC(Path.Combine(App.Settings.settings.mhw_path + "nativePC"));
+                CleanNativePC(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                 App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = false;
             }
             App.Settings.ParseSettingsJSON();
@@ -220,6 +224,14 @@ namespace MhwModManager
                 if (!Directory.EnumerateFileSystemEntries(subdir.FullName).Any())
                     Directory.Delete(subdir.FullName);
             }
+        }
+
+        private void remModContext_Click(object sender, RoutedEventArgs e)
+        {
+            var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
+            Directory.Delete(Path.Combine(App.ModsPath, caller.Content.ToString()), true);
+            App.Settings.settings.mod_installed.RemoveAt(int.Parse(caller.Tag.ToString()));
+            UpdateModsList();
         }
     }
 }
