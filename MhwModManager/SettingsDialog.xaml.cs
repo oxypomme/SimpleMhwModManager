@@ -4,53 +4,10 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows;
 using WinForms = System.Windows.Forms;
+using System;
 
 namespace MhwModManager
 {
-    /// <summary>
-    /// Logique d'interaction pour SettingsDialog.xaml
-    /// </summary>
-    public partial class SettingsDialog : Window
-    {
-        public SettingsDialog()
-        {
-            InitializeComponent();
-            InitializeSettings();
-        }
-
-        private void InitializeSettings()
-        {
-            pathTB.Text = App.Settings.settings.mhw_path;
-            darkmodeCB.IsChecked = App.Settings.settings.dark_mode;
-        }
-
-        private void validateBTN_Click(object sender, RoutedEventArgs e)
-        {
-            App.Settings.ParseSettingsJSON();
-        }
-
-        private void cancelBTN_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void darkmodeCB_Checked(object sender, RoutedEventArgs e)
-        {
-            App.Settings.settings.dark_mode = darkmodeCB.IsChecked.Value;
-            if (App.Settings.settings.dark_mode)
-                darkmodeCB.Content = "Enabled";
-            else
-                darkmodeCB.Content = "Disabled";
-        }
-
-        private void browseBTN_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new WinForms.FolderBrowserDialog();
-            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
-                App.Settings.settings.mhw_path = dialog.SelectedPath;
-        }
-    }
-
     public class Setting
     {
         public Settings settings = new Settings();
@@ -134,6 +91,39 @@ namespace MhwModManager
         public SettingsDialog()
         {
             InitializeComponent();
+            InitializeSettings();
+        }
+
+        private void browseBTN_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new WinForms.FolderBrowserDialog();
+            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                App.Settings.settings.mhw_path = dialog.SelectedPath;
+        }
+
+        private void cancelBTN_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void darkmodeCB_Checked(object sender, RoutedEventArgs e)
+        {
+            App.Settings.settings.dark_mode = darkmodeCB.IsChecked.Value;
+            if (App.Settings.settings.dark_mode)
+                darkmodeCB.Content = "Enabled";
+            else
+                darkmodeCB.Content = "Disabled";
+        }
+
+        private void InitializeSettings()
+        {
+            pathTB.Text = App.Settings.settings.mhw_path;
+            darkmodeCB.IsChecked = App.Settings.settings.dark_mode;
+        }
+
+        private void validateBTN_Click(object sender, RoutedEventArgs e)
+        {
+            App.Settings.ParseSettingsJSON();
         }
     }
 }

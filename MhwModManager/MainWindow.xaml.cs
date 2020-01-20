@@ -110,8 +110,10 @@ namespace MhwModManager
         private void remMod_Click(object sender, RoutedEventArgs e)
         {
             foreach (var mod in modListBox.SelectedItems)
+            {
                 Directory.Delete(Path.Combine(App.ModsPath, (mod as CheckBox).Content.ToString()), true);
                 App.Settings.settings.mod_installed.RemoveAt(int.Parse((mod as CheckBox).Tag.ToString()));
+            }
             UpdateModsList();
         }
 
