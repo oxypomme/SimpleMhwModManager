@@ -44,7 +44,7 @@ namespace MhwModManager
                 var modItem = new CheckBox
                 {
                     Tag = i, //Tag is the id of the checkbox and the mod
-                    Content = mod
+                    Content = mod.Item1
                 };
                 modItem.Checked += itemChecked;
                 modItem.Unchecked += itemChecked;
@@ -53,10 +53,7 @@ namespace MhwModManager
                 (modItem.ContextMenu.Items[0] as MenuItem).Click -= remModContext_Click;
                 (modItem.ContextMenu.Items[0] as MenuItem).Click += remModContext_Click;
 
-                if (App.Settings.settings.mod_installed.Count <= i)
-                    App.Settings.settings.mod_installed.Add(false);
-                else
-                    modItem.IsChecked = App.Settings.settings.mod_installed[i];
+                modItem.IsChecked = mod.Item2;
 
                 modListBox.Items.Add(modItem);
 
@@ -83,8 +80,11 @@ namespace MhwModManager
                 var mods = App.GetMods();
                 for (int i = 0; i < mods.Count; i++)
                 {
-                    if (mods[i].Contains(name[name.GetLength(0) - 1].Split('.')[0]))
-                        App.Settings.settings.mod_installed.Insert(i, false);
+                    if (mods[i].Item1.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                    {
+                        var info = new ModInfo();
+                        info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
+                    }
                 }
             }
             UpdateModsList();
@@ -174,8 +174,9 @@ namespace MhwModManager
             foreach (FileInfo file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
-                if (!File.Exists(temppath))
-                    file.CopyTo(temppath, false);
+                if (!file.Name.Contains("mod.json"))
+                    if (!File.Exists(temppath))
+                        file.CopyTo(temppath, false);
             }
 
             // If copying subdirectories, copy them and their contents to new location.

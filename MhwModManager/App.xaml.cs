@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace MhwModManager
 {
@@ -37,9 +38,9 @@ namespace MhwModManager
             }
         }
 
-        public static List<string> GetMods()
+        public static List<(string, bool)> GetMods()
         {
-            var modList = new List<string>();
+            var modList = new List<(string, bool)>();
 
             if (!Directory.Exists(ModsPath))
                 Directory.CreateDirectory(ModsPath);
@@ -47,7 +48,11 @@ namespace MhwModManager
             var modFolder = new DirectoryInfo(ModsPath);
 
             foreach (var mod in modFolder.GetDirectories())
-                modList.Add(mod.Name);
+            {
+                var info = new ModInfo();
+                info.GenInfo(mod.FullName);
+                modList.Add((mod.Name, info.activated));
+            }
 
             return modList;
         }
@@ -63,6 +68,44 @@ namespace MhwModManager
                 var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
+            }
+        }
+    }
+
+    public class ModInfo
+    {
+        public bool activated { get; set; }
+        public int order { get; set; }
+
+        public void GenInfo(string path, int index = 0)
+        {
+            if (!File.Exists(Path.Combine(path, "mod.json")))
+            {
+                activated = false;
+                order = index;
+
+                ParseSettingsJSON(path);
+            }
+            else
+            {
+                ModInfo sets;
+                using (StreamReader file = new StreamReader(App.SettingsPath))
+                {
+                    sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
+                    file.Close();
+                }
+
+                activated = sets.activated;
+                order = sets.order;
+            }
+        }
+
+        public void ParseSettingsJSON(string path)
+        {
+            using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.json")))
+            {
+                file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
+                file.Close();
             }
         }
     }
