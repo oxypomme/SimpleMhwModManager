@@ -131,6 +131,8 @@ namespace MhwModManager
 
         private void settingsMod_Click(object sender, RoutedEventArgs e)
         {
+            var settingsWindow = new SettingsDialog();
+            settingsWindow.ShowDialog();
         }
 
         private void itemChecked(object sender, RoutedEventArgs e)

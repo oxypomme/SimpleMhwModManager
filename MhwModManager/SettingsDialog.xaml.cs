@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using WinForms = System.Windows.Forms;
 
 namespace MhwModManager
 {
@@ -13,6 +14,35 @@ namespace MhwModManager
         public SettingsDialog()
         {
             InitializeComponent();
+            InitializeSettings();
+        }
+
+        private void InitializeSettings()
+        {
+            pathTB.Text = App.Settings.settings.mhw_path;
+            darkmodeCB.IsChecked = App.Settings.settings.dark_mode;
+        }
+
+        private void validateBTN_Click(object sender, RoutedEventArgs e)
+        {
+            App.Settings.ParseSettingsJSON();
+        }
+
+        private void cancelBTN_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void darkmodeCB_Checked(object sender, RoutedEventArgs e)
+        {
+            App.Settings.settings.dark_mode = darkmodeCB.IsChecked.Value;
+        }
+
+        private void browseBTN_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new WinForms.FolderBrowserDialog();
+            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                App.Settings.settings.mhw_path = dialog.SelectedPath;
         }
     }
 
