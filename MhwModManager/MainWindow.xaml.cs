@@ -65,7 +65,7 @@ namespace MhwModManager
         {
             var dialog = new OpenFileDialog();
             dialog.DefaultExt = "zip";
-            dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar";
+            dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar|all files|*";
             if (dialog.ShowDialog() == true)
             {
                 var name = dialog.FileName.Split('\\');
