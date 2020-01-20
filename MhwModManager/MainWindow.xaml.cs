@@ -43,7 +43,7 @@ namespace MhwModManager
             {
                 var modItem = new CheckBox
                 {
-                    Tag = i,
+                    Tag = i, //Tag is the id of the checkbox and the mod
                     Content = mod
                 };
                 modItem.Checked += itemChecked;
@@ -68,10 +68,17 @@ namespace MhwModManager
             dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar";
             if (dialog.ShowDialog() == true)
             {
+                var name = dialog.FileName.Split('\\');
                 ZipFile.ExtractToDirectory(dialog.FileName, "mods/tmp");
-                if (!InstallMod("mods/tmp", dialog.FileName.Split('\\')))
+                if (!InstallMod("mods/tmp", name))
                     MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 Directory.Delete("mods/tmp/", true);
+                var mods = App.GetMods();
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    if (mods[i].Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                        App.Settings.settings.mod_installed.Insert(i, false);
+                }
             }
             UpdateModsList();
         }
@@ -100,7 +107,10 @@ namespace MhwModManager
         private void remMod_Click(object sender, RoutedEventArgs e)
         {
             foreach (var mod in modListBox.SelectedItems)
+            {
                 Directory.Delete(@"mods\" + (mod as CheckBox).Content.ToString() + @"\", true);
+                App.Settings.settings.mod_installed.RemoveAt(int.Parse((mod as CheckBox).Tag.ToString()));
+            }
             UpdateModsList();
         }
 
