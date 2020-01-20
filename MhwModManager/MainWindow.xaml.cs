@@ -69,21 +69,32 @@ namespace MhwModManager
             if (dialog.ShowDialog() == true)
             {
                 ZipFile.ExtractToDirectory(dialog.FileName, "mods/tmp");
-                foreach (var dir in Directory.GetDirectories("mods/tmp"))
-                {
-                    if (dir.Contains("nativePC"))
-                    {
-                        var name = dialog.FileName.Split('\\');
-                        var modName = name[name.GetLength(0) - 1].Split('.')[0];
-                        if (!Directory.Exists("mods/" + modName))
-                            Directory.Move(dir, @"mods\" + modName);
-                        else
-                            MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Directory.Delete("mods/tmp/", true);
-                    }
-                }
+                if (!InstallMod("mods/tmp", dialog.FileName.Split('\\')))
+                    MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                Directory.Delete("mods/tmp/", true);
             }
             UpdateModsList();
+        }
+
+        private bool InstallMod(string path, string[] name)
+        {
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                if (dir.Contains("nativePC"))
+                {
+                    var modName = name[name.GetLength(0) - 1].Split('.')[0];
+                    if (!Directory.Exists("mods/" + modName))
+                        Directory.Move(dir, @"mods\" + modName);
+                    else
+                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
+                else
+                {
+                    InstallMod(dir, name);
+                }
+            }
+            return false;
         }
 
         private void remMod_Click(object sender, RoutedEventArgs e)
