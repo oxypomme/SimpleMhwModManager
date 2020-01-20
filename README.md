@@ -1,7 +1,7 @@
 # Simple MHW Mod Manager
 
 [![version](https://img.shields.io/github/v/release/oxypomme/SimpleMhwModManager?label=Version&style=for-the-badge)](https://shields.io)
-<a href="https://forthebadge.com/"> [![downloads](https://img.shields.io/github/downloads/oxypomme/SimpleMhwModManager/total?style=for-the-badge)](https://shields.io) <img src="https://forthebadge.com/images/badges/made-with-c-sharp.svg" alt="forthebadge" height="28"/></a>
+[![downloads](https://img.shields.io/github/downloads/oxypomme/SimpleMhwModManager/total?style=for-the-badge)](https://shields.io) <a href="https://forthebadge.com/"><img src="https://forthebadge.com/images/badges/made-with-c-sharp.svg" alt="forthebadge" height="28"/></a>
 
 > Simple MHW Mod Manager, or SMHWMM, or WhateverYouLike is a simple mod manager for Monster Hunter World
 
@@ -21,7 +21,7 @@ A button to add a mod, a second one to delete a mod.
 ## Changelog
 
 - v0.0.1
-  - Add a mod to install/unistall when you want
+  - Add a mod to install/uninstall when you want
   - Remove completely a mod (The right click doesn't work, I know !)
   - A link to Nexus Mod ! (Useless ? Useless.)
   - A false settings button, and that's incredible (I'll work on it - before the 0.0.2)
@@ -31,6 +31,6 @@ A button to add a mod, a second one to delete a mod.
 
 - [**OxyTom**](https://github.com/oxypomme) - [@OxyTom](https://twitter.com/OxyT0m8)
 
-Thanks to all of [contributors](https://github.com/oxypomme/DofLogC/contributors). Aka me atm.
+Thanks to all of [contributors](https://github.com/oxypomme/SimpleMhwModManager/contributors).
 
-[![license](https://img.shields.io/github/license/oxypomme/SimpleMhwModManager?style=for-the-badge)](https://github.com/oxypomme/DofLogC/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/oxypomme/SimpleMhwModManager?style=for-the-badge)](https://github.com/oxypomme/SimpleMhwModManager/blob/master/LICENSE)
