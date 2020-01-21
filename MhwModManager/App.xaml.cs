@@ -102,7 +102,7 @@ namespace MhwModManager
 
         public void ParseSettingsJSON(string path)
         {
-            using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.json")))
+            using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
             {
                 file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
                 file.Close();
