@@ -46,7 +46,6 @@ namespace MhwModManager
 
                 settings.dark_mode = false;
                 settings.mhw_path = FindMHWInstallFolder();
-                settings.mod_installed = new List<bool>();
                 ParseSettingsJSON();
             }
             else
@@ -62,7 +61,6 @@ namespace MhwModManager
                 if (!Directory.Exists(sets.settings.mhw_path))
                     sets.settings.mhw_path = FindMHWInstallFolder();
                 settings.mhw_path = sets.settings.mhw_path;
-                settings.mod_installed = sets.settings.mod_installed;
             }
         }
 
@@ -79,7 +77,6 @@ namespace MhwModManager
         {
             public bool dark_mode;
             public string mhw_path;
-            public List<bool> mod_installed;
         }
     }
 

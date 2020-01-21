@@ -116,7 +116,6 @@ namespace MhwModManager
             foreach (var mod in modListBox.SelectedItems)
             {
                 Directory.Delete(Path.Combine(App.ModsPath, (mod as CheckBox).Content.ToString()), true);
-                App.Settings.settings.mod_installed.RemoveAt(int.Parse((mod as CheckBox).Tag.ToString()));
             }
             UpdateModsList();
         }
@@ -144,17 +143,18 @@ namespace MhwModManager
 
         private void itemChecked(object sender, RoutedEventArgs e)
         {
+            var mod = Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString());
             if ((sender as CheckBox).IsChecked.Value == true)
-            {
-                DirectoryCopy(Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString()), Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
-                App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = true;
-            }
+                DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
             else
             {
                 DeleteMod(Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString()), Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                 CleanNativePC(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                App.Settings.settings.mod_installed[int.Parse((sender as CheckBox).Tag.ToString())] = false;
             }
+            var info = new ModInfo();
+            info.GenInfo(mod);
+            info.activated = (sender as CheckBox).IsChecked.Value;
+            info.ParseSettingsJSON(mod);
             App.Settings.ParseSettingsJSON();
         }
 
@@ -231,7 +231,6 @@ namespace MhwModManager
         {
             var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
             Directory.Delete(Path.Combine(App.ModsPath, caller.Content.ToString()), true);
-            App.Settings.settings.mod_installed.RemoveAt(int.Parse(caller.Tag.ToString()));
             UpdateModsList();
         }
     }
