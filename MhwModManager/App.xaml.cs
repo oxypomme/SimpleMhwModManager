@@ -89,7 +89,7 @@ namespace MhwModManager
             else
             {
                 ModInfo sets;
-                using (StreamReader file = new StreamReader(App.SettingsPath))
+                using (StreamReader file = new StreamReader(Path.Combine(path, "mod.json")))
                 {
                     sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
                     file.Close();
