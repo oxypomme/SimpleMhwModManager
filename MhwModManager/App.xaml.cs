@@ -79,7 +79,7 @@ namespace MhwModManager
 
         public void GenInfo(string path, int index = 0)
         {
-            if (!File.Exists(Path.Combine(path, "mod.json")))
+            if (!File.Exists(Path.Combine(path, "mod.info")))
             {
                 activated = false;
                 order = index;
@@ -89,7 +89,7 @@ namespace MhwModManager
             else
             {
                 ModInfo sets;
-                using (StreamReader file = new StreamReader(Path.Combine(path, "mod.json")))
+                using (StreamReader file = new StreamReader(Path.Combine(path, "mod.info")))
                 {
                     sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
                     file.Close();

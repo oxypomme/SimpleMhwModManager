@@ -174,7 +174,7 @@ namespace MhwModManager
             foreach (FileInfo file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
-                if (!file.Name.Contains("mod.json"))
+                if (!file.Name.Contains("mod.info"))
                     if (!File.Exists(temppath))
                         file.CopyTo(temppath, false);
             }
