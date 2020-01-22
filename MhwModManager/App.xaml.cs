@@ -38,9 +38,9 @@ namespace MhwModManager
             }
         }
 
-        public static List<(string, bool)> GetMods()
+        public static List<ModInfo> GetMods()
         {
-            var modList = new List<(string, bool)>();
+            var modList = new List<ModInfo>();
 
             if (!Directory.Exists(ModsPath))
                 Directory.CreateDirectory(ModsPath);
@@ -51,7 +51,7 @@ namespace MhwModManager
             {
                 var info = new ModInfo();
                 info.GenInfo(mod.FullName);
-                modList.Add((mod.Name, info.activated));
+                modList.Add(info);
             }
 
             return modList;
@@ -76,6 +76,7 @@ namespace MhwModManager
     {
         public bool activated { get; set; }
         public int order { get; set; }
+        public string name { get; set; }
 
         public void GenInfo(string path, int index = 0)
         {
@@ -83,6 +84,9 @@ namespace MhwModManager
             {
                 activated = false;
                 order = index;
+
+                var foldName = path.Split('\\');
+                name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
 
                 ParseSettingsJSON(path);
             }
@@ -97,6 +101,7 @@ namespace MhwModManager
 
                 activated = sets.activated;
                 order = sets.order;
+                name = sets.name;
             }
         }
 

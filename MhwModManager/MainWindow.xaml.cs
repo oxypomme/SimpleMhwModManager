@@ -44,21 +44,32 @@ namespace MhwModManager
                 var modItem = new CheckBox
                 {
                     Tag = i, //Tag is the id of the checkbox and the mod
-                    Content = mod.Item1
+                    Content = mod.name
                 };
+                modItem.IsChecked = mod.activated;
                 modItem.Checked += itemChecked;
                 modItem.Unchecked += itemChecked;
                 Style style = Application.Current.FindResource("CheckBoxListItem") as Style;
                 modItem.Style = style;
-                (modItem.ContextMenu.Items[0] as MenuItem).Click -= remModContext_Click;
-                (modItem.ContextMenu.Items[0] as MenuItem).Click += remModContext_Click;
-
-                modItem.IsChecked = mod.Item2;
+                foreach (MenuItem item in modItem.ContextMenu.Items)
+                {
+                    if (item.Tag.ToString() == "rem")
+                    {
+                        item.Click -= remModContext_Click;
+                        item.Click += remModContext_Click;
+                    }
+                    else if (item.Tag.ToString() == "edit")
+                    {
+                        item.Click -= editModContext_Click;
+                        item.Click += editModContext_Click;
+                    }
+                }
 
                 modListBox.Items.Add(modItem);
 
                 i++;
             }
+
             App.Settings.ParseSettingsJSON();
         }
 
@@ -80,7 +91,7 @@ namespace MhwModManager
                 var mods = App.GetMods();
                 for (int i = 0; i < mods.Count; i++)
                 {
-                    if (mods[i].Item1.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                    if (mods[i].name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
                     {
                         var info = new ModInfo();
                         info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
@@ -231,6 +242,19 @@ namespace MhwModManager
         {
             var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
             Directory.Delete(Path.Combine(App.ModsPath, caller.Content.ToString()), true);
+            UpdateModsList();
+        }
+
+        private void editModContext_Click(object sender, RoutedEventArgs e)
+        {
+            var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
+            editMod(Path.Combine(App.ModsPath, caller.Content.ToString()));
+        }
+
+        private void editMod(string path)
+        {
+            var editWindow = new EditWindow(path);
+            editWindow.ShowDialog();
             UpdateModsList();
         }
     }
