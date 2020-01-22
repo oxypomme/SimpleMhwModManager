@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MhwModManager"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="SMM - Settings" Height="400" Width="320">
     <ScrollViewer>
         <StackPanel Margin="10,0">

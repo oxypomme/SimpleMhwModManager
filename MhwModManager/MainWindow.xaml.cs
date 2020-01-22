@@ -38,15 +38,18 @@ namespace MhwModManager
         {
             modListBox.Items.Clear();
 
-            int i = 0;
+            App.GetMods();
             foreach (var mod in App.Mods)
             {
+                if (mod.Item1.order >= App.Mods.Count())
+                    mod.Item1.order = App.Mods.Count() - 1;
+
                 var modItem = new CheckBox
                 {
-                    Tag = i, //Tag is the id of the checkbox and the mod
-                    Content = mod.name
+                    Tag = mod.Item1.order,
+                    Content = mod.Item1.name
                 };
-                modItem.IsChecked = mod.activated;
+                modItem.IsChecked = mod.Item1.activated;
                 modItem.Checked += itemChecked;
                 modItem.Unchecked += itemChecked;
                 Style style = Application.Current.FindResource("CheckBoxListItem") as Style;
@@ -66,8 +69,6 @@ namespace MhwModManager
                 }
 
                 modListBox.Items.Add(modItem);
-
-                i++;
             }
 
             App.Settings.ParseSettingsJSON();
@@ -91,7 +92,7 @@ namespace MhwModManager
                 App.GetMods();
                 for (int i = 0; i < App.Mods.Count; i++)
                 {
-                    if (App.Mods[i].name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                    if (App.Mods[i].Item1.name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
                     {
                         var info = new ModInfo();
                         info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
@@ -149,17 +150,18 @@ namespace MhwModManager
         private void settingsMod_Click(object sender, RoutedEventArgs e)
         {
             var settingsWindow = new SettingsDialog();
+            settingsWindow.Owner = Application.Current.MainWindow;
             settingsWindow.ShowDialog();
         }
 
         private void itemChecked(object sender, RoutedEventArgs e)
         {
-            var mod = Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString());
+            var mod = Path.Combine(App.ModsPath, App.Mods[int.Parse((sender as CheckBox).Tag.ToString())].Item2);
             if ((sender as CheckBox).IsChecked.Value == true)
                 DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
             else
             {
-                DeleteMod(Path.Combine(App.ModsPath, (sender as CheckBox).Content.ToString()), Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                DeleteMod(Path.Combine(App.ModsPath, App.Mods[int.Parse((sender as CheckBox).Tag.ToString())].Item2), Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                 CleanNativePC(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
             }
             var info = new ModInfo();
@@ -241,19 +243,23 @@ namespace MhwModManager
         private void remModContext_Click(object sender, RoutedEventArgs e)
         {
             var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-            Directory.Delete(Path.Combine(App.ModsPath, caller.Content.ToString()), true);
+            var index = int.Parse(caller.Tag.ToString());
+            Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
+            App.Mods.RemoveAt(index);
+
             UpdateModsList();
         }
 
         private void editModContext_Click(object sender, RoutedEventArgs e)
         {
             var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-            editMod(Path.Combine(App.ModsPath, caller.Content.ToString()));
+            editMod(App.Mods[int.Parse(caller.Tag.ToString())].Item2);
         }
 
-        private void editMod(string path)
+        private void editMod(string folderName)
         {
-            var editWindow = new EditWindow(path);
+            var editWindow = new EditWindow(folderName);
+            editWindow.Owner = Application.Current.MainWindow;
             editWindow.ShowDialog();
             UpdateModsList();
         }

@@ -5,15 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MhwModManager"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="SMM - Settings" Height="150" Width="320">
     <StackPanel>
         <WrapPanel>
             <TextBlock Text="Name :" Margin="5" />
-            <TextBox Name="nameTB" MinWidth="200" MaxWidth="250" Margin="0,5" TextChanged="nameTB_TextChanged" />
+            <TextBox Name="nameTB" MinWidth="200" MaxWidth="250" Margin="0,5" />
         </WrapPanel>
         <WrapPanel>
             <TextBlock Text="Order :" Margin="5" />
-            <TextBox Name="orderTB" MinWidth="30" MaxWidth="250" Margin="0,5" TextChanged="orderTB_TextChanged" />
+            <TextBox Name="orderTB" MinWidth="30" MaxWidth="250" Margin="0,5" />
         </WrapPanel>
         <WrapPanel HorizontalAlignment="Right">
             <Button Name="validateBTN" Content="Validate" Click="validateBTN_Click" Width="55" Padding="5" Margin="5" Style="{StaticResource ValidateButton}" />

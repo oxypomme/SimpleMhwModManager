@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MhwModManager
 {
@@ -19,25 +9,63 @@ namespace MhwModManager
     /// </summary>
     public partial class EditWindow : Window
     {
+        private string modPath;
+        private int index;
+        private int? order;
+
         public EditWindow(string path)
         {
             InitializeComponent();
+            modPath = path;
+            int i = 0;
+            foreach (var mod in App.Mods)
+            {
+                if (mod.Item2 == path)
+                {
+                    index = i;
+                    nameTB.Text = mod.Item1.name;
+                    nameTB.TextChanged += nameTB_TextChanged;
+                    order = mod.Item1.order;
+                    orderTB.Text = mod.Item1.order.ToString();
+                    orderTB.TextChanged += orderTB_TextChanged;
+                    break;
+                }
+                i++;
+            }
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
         {
+            if (order != null)
+            {
+                App.Mods[index].Item1.order = order.Value;
+                App.Mods[index].Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, modPath));
+                Close();
+            }
+            else
+                MessageBox.Show("The order must be a number !", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void cancelBTN_Click(object sender, RoutedEventArgs e)
         {
+            Close();
         }
 
         private void nameTB_TextChanged(object sender, TextChangedEventArgs e)
         {
+            App.Mods[index].Item1.name = nameTB.Text;
         }
 
         private void orderTB_TextChanged(object sender, TextChangedEventArgs e)
         {
+            try
+            {
+                order = int.Parse(orderTB.Text);
+            }
+            catch (FormatException)
+            {
+                order = null;
+            }
         }
     }
 }

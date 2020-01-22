@@ -20,7 +20,7 @@ namespace MhwModManager
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
-        public static List<ModInfo> Mods;
+        public static List<(ModInfo, string)> Mods;
 
         public App()
         {
@@ -41,7 +41,7 @@ namespace MhwModManager
 
         public static void GetMods()
         {
-            var Mods = new List<ModInfo>();
+            Mods = new List<(ModInfo, string)>();
 
             if (!Directory.Exists(ModsPath))
                 Directory.CreateDirectory(ModsPath);
@@ -52,7 +52,7 @@ namespace MhwModManager
             {
                 var info = new ModInfo();
                 info.GenInfo(mod.FullName);
-                Mods.Add(info);
+                Mods.Add((info, mod.Name));
             }
         }
 
@@ -77,12 +77,15 @@ namespace MhwModManager
         public int order { get; set; }
         public string name { get; set; }
 
-        public void GenInfo(string path, int index = 0)
+        public void GenInfo(string path, int? index = null)
         {
             if (!File.Exists(Path.Combine(path, "mod.info")))
             {
                 activated = false;
-                order = index;
+                if (index != null)
+                    order = index.Value;
+                else
+                    order = App.Mods.Count();
 
                 var foldName = path.Split('\\');
                 name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
