@@ -33,7 +33,7 @@
                 <Button Name="webMod" Click="webMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/web.png" />
                 </Button>
-                <Button Name="settingsMod" Click="settingsMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
+                <Button Name="settingsMod" Click="settingsMod_Click" ToolTip="Options" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/settings.png" />
                 </Button>
             </StackPanel>
