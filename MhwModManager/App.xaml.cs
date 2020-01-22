@@ -20,6 +20,7 @@ namespace MhwModManager
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
+        public static List<ModInfo> Mods;
 
         public App()
         {
@@ -38,9 +39,9 @@ namespace MhwModManager
             }
         }
 
-        public static List<ModInfo> GetMods()
+        public static void GetMods()
         {
-            var modList = new List<ModInfo>();
+            var Mods = new List<ModInfo>();
 
             if (!Directory.Exists(ModsPath))
                 Directory.CreateDirectory(ModsPath);
@@ -51,10 +52,8 @@ namespace MhwModManager
             {
                 var info = new ModInfo();
                 info.GenInfo(mod.FullName);
-                modList.Add(info);
+                Mods.Add(info);
             }
-
-            return modList;
         }
 
         public async static void Updater()

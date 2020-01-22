@@ -23,5 +23,21 @@ namespace MhwModManager
         {
             InitializeComponent();
         }
+
+        private void validateBTN_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void cancelBTN_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void nameTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private void orderTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
     }
 }

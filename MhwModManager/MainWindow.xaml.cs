@@ -39,7 +39,7 @@ namespace MhwModManager
             modListBox.Items.Clear();
 
             int i = 0;
-            foreach (var mod in App.GetMods())
+            foreach (var mod in App.Mods)
             {
                 var modItem = new CheckBox
                 {
@@ -88,10 +88,10 @@ namespace MhwModManager
                 if (!InstallMod(tmpFolder, name))
                     MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 Directory.Delete(tmpFolder, true);
-                var mods = App.GetMods();
-                for (int i = 0; i < mods.Count; i++)
+                App.GetMods();
+                for (int i = 0; i < App.Mods.Count; i++)
                 {
-                    if (mods[i].name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                    if (App.Mods[i].name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
                     {
                         var info = new ModInfo();
                         info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
