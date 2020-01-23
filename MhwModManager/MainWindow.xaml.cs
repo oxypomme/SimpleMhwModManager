@@ -37,10 +37,11 @@ namespace MhwModManager
         private void UpdateModsList()
         {
             modListBox.Items.Clear();
-
             App.GetMods();
+
             foreach (var mod in App.Mods)
             {
+                // Increase the order count if didn't exist
                 if (mod.Item1.order >= App.Mods.Count())
                     mod.Item1.order = App.Mods.Count() - 1;
 
@@ -52,7 +53,8 @@ namespace MhwModManager
                 modItem.IsChecked = mod.Item1.activated;
                 modItem.Checked += itemChecked;
                 modItem.Unchecked += itemChecked;
-                Style style = Application.Current.FindResource("CheckBoxListItem") as Style;
+                // Adding the context menu
+                var style = Application.Current.FindResource("CheckBoxListItem") as Style;
                 modItem.Style = style;
                 foreach (MenuItem item in modItem.ContextMenu.Items)
                 {
@@ -78,24 +80,35 @@ namespace MhwModManager
         {
             var dialog = new WinForms.OpenFileDialog();
             var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
+
             if (!Directory.Exists(tmpFolder))
                 Directory.CreateDirectory(tmpFolder);
+
+            // Dialog to select a mod archive
             dialog.DefaultExt = "zip";
-            dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar|all files|*";
+            dialog.Filter = "Mod Archives (*.zip)|*.zip|all files|*";
+            dialog.Multiselect = true;
             if (dialog.ShowDialog() == WinForms.DialogResult.OK)
             {
-                var name = dialog.FileName.Split('\\');
-                ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
-                if (!InstallMod(tmpFolder, name))
-                    MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                Directory.Delete(tmpFolder, true);
-                App.GetMods();
-                for (int i = 0; i < App.Mods.Count; i++)
+                foreach (var file in dialog.FileNames)
                 {
-                    if (App.Mods[i].Item1.name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                    // Separate the path and unzip mod
+                    var name = file.Split('\\');
+                    ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
+
+                    if (!InstallMod(tmpFolder, name)) // If the install fail
+                        MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Directory.Delete(tmpFolder, true);
+
+                    App.GetMods(); // Refresh the modlist
+
+                    for (int i = 0; i < App.Mods.Count; i++)
                     {
-                        var info = new ModInfo();
-                        info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
+                        if (App.Mods[i].Item1.name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                        {
+                            var info = new ModInfo();
+                            info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
+                        }
                     }
                 }
             }
