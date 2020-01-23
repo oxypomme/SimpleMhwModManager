@@ -161,7 +161,7 @@ namespace MhwModManager
                 DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
             else
             {
-                DeleteMod(Path.Combine(App.ModsPath, App.Mods[int.Parse((sender as CheckBox).Tag.ToString())].Item2), Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                DeleteMod(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                 CleanNativePC(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
             }
             var info = new ModInfo();
