@@ -93,10 +93,10 @@ namespace MhwModManager
                 foreach (var file in dialog.FileNames)
                 {
                     // Separate the path and unzip mod
-                    var name = file.Split('\\');
+                    var splittedPath = file.Split('\\');
                     ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
 
-                    if (!InstallMod(tmpFolder, name)) // If the install fail
+                    if (!InstallMod(tmpFolder, splittedPath)) // If the install fail
                         MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                     Directory.Delete(tmpFolder, true);
 
@@ -104,10 +104,11 @@ namespace MhwModManager
 
                     for (int i = 0; i < App.Mods.Count; i++)
                     {
-                        if (App.Mods[i].Item1.name.Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                        var name = splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0];
+                        if (App.Mods[i].Item1.name.Contains(name))
                         {
                             var info = new ModInfo();
-                            info.GenInfo(Path.Combine(App.ModsPath, name[name.GetLength(0) - 1].Split('.')[0]), i);
+                            info.GenInfo(Path.Combine(App.ModsPath, name), i);
                         }
                     }
                 }
@@ -115,22 +116,22 @@ namespace MhwModManager
             UpdateModsList();
         }
 
-        private bool InstallMod(string path, string[] name)
+        private bool InstallMod(string path, string[] splittedPath)
         {
             foreach (var dir in Directory.GetDirectories(path))
             {
                 if (dir.Contains("nativePC"))
                 {
-                    var modName = name[name.GetLength(0) - 1].Split('.')[0];
-                    if (!Directory.Exists(Path.Combine(App.ModsPath, modName)))
-                        Directory.Move(dir, Path.Combine(App.ModsPath, modName));
+                    var name = splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0];
+                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
+                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
                     else
                         MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                     return true;
                 }
                 else
                 {
-                    InstallMod(dir, name);
+                    InstallMod(dir, splittedPath);
                 }
             }
             return false;
