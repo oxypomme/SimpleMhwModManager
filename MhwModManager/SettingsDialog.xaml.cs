@@ -14,9 +14,12 @@ namespace MhwModManager
 
         public static string FindMHWInstallFolder()
         {
+            /* Thanks to WildGoat07 : https://github.com/WildGoat07 */
+            // Read the registery to get the steam path
             var steamRoot = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", "InstallPath", null) as string;
             var libFolders = new List<string>();
             libFolders.Add(Path.Combine(steamRoot));
+            // Read the steam library
             dynamic libraryfolders = Gameloop.Vdf.VdfConvert.Deserialize(File.ReadAllText(Path.Combine(steamRoot, "steamapps", "libraryfolders.vdf")));
             try
             {
@@ -24,7 +27,7 @@ namespace MhwModManager
                     libFolders.Add(libraryfolders.Value[i.ToString()].ToString());
             }
             catch (Exception) { }
-            const string appid = "582010";
+            const string appid = "582010"; // The appif of Monster Hunter World
             foreach (var folder in libFolders)
                 foreach (var file in new DirectoryInfo(Path.Combine(folder, "steamapps")).GetFiles())
                     if (file.Extension == ".acf")
@@ -32,7 +35,7 @@ namespace MhwModManager
                         {
                             dynamic content = Gameloop.Vdf.VdfConvert.Deserialize(text.ReadToEnd());
                             if (content.Value.appid.ToString() == appid)
-                                return Path.Combine(file.DirectoryName, "common", content.Value.installdir.ToString());
+                                return Path.Combine(file.DirectoryName, "common", content.Value.installdir.ToString()); // The path of Monster Hunter World
                         }
             return null;
         }
@@ -111,6 +114,8 @@ namespace MhwModManager
                 darkmodeCB.Content = "Enabled";
             else
                 darkmodeCB.Content = "Disabled";
+
+            /* WIP */
         }
 
         private void InitializeSettings()

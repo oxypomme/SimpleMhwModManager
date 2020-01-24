@@ -96,7 +96,9 @@ namespace MhwModManager
                     var splittedPath = file.Split('\\');
                     ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
 
-                    if (!InstallMod(tmpFolder, splittedPath)) // If the install fail
+                    // Get the name of the extracted folder (without the .zip at the end), not the full path
+                    if (!InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]))
+                        // If the install fail
                         MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                     Directory.Delete(tmpFolder, true);
 
@@ -106,14 +108,14 @@ namespace MhwModManager
             UpdateModsList();
         }
 
-        private bool InstallMod(string path, string[] splittedPath)
+        private bool InstallMod(string path, string name)
         {
             foreach (var dir in Directory.GetDirectories(path))
             {
                 if (dir.Contains("nativePC"))
                 {
-                    var name = splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0];
                     if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
+                        // If the mod isn't installed
                         Directory.Move(dir, Path.Combine(App.ModsPath, name));
                     else
                         MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -121,7 +123,7 @@ namespace MhwModManager
                 }
                 else
                 {
-                    InstallMod(dir, splittedPath);
+                    InstallMod(dir, name);
                 }
             }
             return false;
@@ -131,7 +133,10 @@ namespace MhwModManager
         {
             foreach (var mod in modListBox.SelectedItems)
             {
-                Directory.Delete(Path.Combine(App.ModsPath, (mod as CheckBox).Content.ToString()), true);
+                var caller = (mod as CheckBox);
+                var index = int.Parse(caller.Tag.ToString());
+                Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
+                App.Mods.RemoveAt(index);
             }
             UpdateModsList();
         }
@@ -160,19 +165,24 @@ namespace MhwModManager
 
         private void itemChecked(object sender, RoutedEventArgs e)
         {
-            var mod = Path.Combine(App.ModsPath, App.Mods[int.Parse((sender as CheckBox).Tag.ToString())].Item2);
+            // Get the full path of the mod
+            var index = int.Parse((sender as CheckBox).Tag.ToString());
+            var mod = Path.Combine(App.ModsPath, App.Mods[index].Item2);
+
             if ((sender as CheckBox).IsChecked.Value == true)
+                // Install the mod
                 DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
             else
             {
+                // Desinstall the mod
                 DeleteMod(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                CleanNativePC(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
             }
-            var info = new ModInfo();
+
+            var info = App.Mods[index].Item1;
             info.GenInfo(mod);
             info.activated = (sender as CheckBox).IsChecked.Value;
             info.ParseSettingsJSON(mod);
-            App.Settings.ParseSettingsJSON();
         }
 
         // Credits to https://docs.microsoft.com/fr-fr/dotnet/standard/io/how-to-copy-directories
@@ -207,15 +217,18 @@ namespace MhwModManager
 
         private static void DeleteMod(string modPath, string folder)
         {
-            // Get the subdirectories for the specified directory.
+            // Get the subdirectories for the mod directory.
             DirectoryInfo modDir = new DirectoryInfo(modPath);
             DirectoryInfo[] modDirs = modDir.GetDirectories();
 
             // Get the files in the directory
             FileInfo[] modFiles = modDir.GetFiles();
 
+            // Get the subdirectories for the nativePC directory.
             DirectoryInfo dir = new DirectoryInfo(folder);
             DirectoryInfo[] dirs = dir.GetDirectories();
+
+            // Get the files in the directory
             FileInfo[] files = dir.GetFiles();
 
             foreach (FileInfo modfile in modFiles)
@@ -231,15 +244,16 @@ namespace MhwModManager
                     DeleteMod(submoddir.FullName, subdir.FullName);
         }
 
-        private static void CleanNativePC(string folder)
+        private static void CleanFolder(string folder)
         {
             DirectoryInfo dir = new DirectoryInfo(folder);
             DirectoryInfo[] dirs = dir.GetDirectories();
 
             foreach (DirectoryInfo subdir in dirs)
             {
-                CleanNativePC(subdir.FullName);
+                CleanFolder(subdir.FullName);
                 if (!Directory.EnumerateFileSystemEntries(subdir.FullName).Any())
+                    // If the directory is empty
                     Directory.Delete(subdir.FullName);
             }
         }

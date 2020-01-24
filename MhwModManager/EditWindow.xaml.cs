@@ -23,11 +23,14 @@ namespace MhwModManager
                 if (mod.Item2 == path)
                 {
                     index = i;
+
                     nameTB.Text = mod.Item1.name;
                     nameTB.TextChanged += nameTB_TextChanged;
+
                     order = mod.Item1.order;
                     orderTB.Text = mod.Item1.order.ToString();
                     orderTB.TextChanged += orderTB_TextChanged;
+
                     break;
                 }
                 i++;
@@ -38,6 +41,16 @@ namespace MhwModManager
         {
             if (order != null)
             {
+                foreach (var mod in App.Mods)
+                {
+                    if (mod.Item1.order == order.Value)
+                    {
+                        // If the new order is already given, exchange them
+                        mod.Item1.order = App.Mods[index].Item1.order;
+                        mod.Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, mod.Item2));
+                        break;
+                    }
+                }
                 App.Mods[index].Item1.order = order.Value;
                 App.Mods[index].Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, modPath));
                 Close();

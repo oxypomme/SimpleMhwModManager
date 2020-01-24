@@ -41,6 +41,7 @@ namespace MhwModManager
 
         public static void GetMods()
         {
+            // This list contain the ModInfos and the folder name of each mod
             Mods = new List<(ModInfo, string)>();
 
             if (!Directory.Exists(ModsPath))
@@ -52,7 +53,11 @@ namespace MhwModManager
             {
                 var info = new ModInfo();
                 info.GenInfo(mod.FullName);
-                Mods.Add((info, mod.Name));
+                // If the order change the generation of the list
+                if (info.order >= Mods.Count)
+                    Mods.Add((info, mod.Name));
+                else
+                    Mods.Insert(info.order, (info, mod.Name));
             }
         }
 
@@ -87,6 +92,7 @@ namespace MhwModManager
                 else
                     order = App.Mods.Count();
 
+                // Get the name of the extracted folder (without the .zip at the end), not the full path
                 var foldName = path.Split('\\');
                 name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
 
