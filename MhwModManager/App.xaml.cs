@@ -49,6 +49,7 @@ namespace MhwModManager
 
             var modFolder = new DirectoryInfo(ModsPath);
 
+            int i = 0;
             foreach (var mod in modFolder.GetDirectories())
             {
                 var info = new ModInfo();
@@ -57,7 +58,16 @@ namespace MhwModManager
                 if (info.order >= Mods.Count)
                     Mods.Add((info, mod.Name));
                 else
+                {
+                    if (i > 0)
+                        if (info.order == Mods[i - 1].Item1.order || info.order == Mods[i + 1].Item1.order)
+                        {
+                            info.order++;
+                            info.ParseSettingsJSON(mod.FullName);
+                        }
                     Mods.Insert(info.order, (info, mod.Name));
+                }
+                i++;
             }
         }
 
