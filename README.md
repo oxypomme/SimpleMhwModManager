@@ -22,6 +22,8 @@ A button to add a mod, a second one to delete a mod.
 
 ## Changelog
 
+- v0.0.3
+  - [FIXED] Can't activate a new mod !
 - v0.0.2
   - [FIXED] The application not showing after setting up the MHW path
   - [FIXED] Warning message when install a new mod
