@@ -98,6 +98,7 @@ namespace MhwModManager
         private void browseBTN_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new WinForms.FolderBrowserDialog();
+            dialog.SelectedPath = App.Settings.settings.mhw_path;
             if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                 App.Settings.settings.mhw_path = dialog.SelectedPath;
         }
