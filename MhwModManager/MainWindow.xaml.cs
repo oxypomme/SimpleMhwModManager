@@ -68,23 +68,19 @@ namespace MhwModManager
             if (!Directory.Exists(tmpFolder))
                 Directory.CreateDirectory(tmpFolder);
             dialog.DefaultExt = "zip";
-            dialog.Multiselect = true;
             dialog.Filter = "zip files (*.zip)|*.zip|rar files (*.rar)|*.rar|all files|*";
             if (dialog.ShowDialog() == WinForms.DialogResult.OK)
             {
-                foreach (var fileName in dialog.FileNames)
+                var name = dialog.FileName.Split('\\');
+                ZipFile.ExtractToDirectory(dialog.FileName, tmpFolder);
+                if (!InstallMod(tmpFolder, name))
+                    MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                Directory.Delete(tmpFolder, true);
+                var mods = App.GetMods();
+                for (int i = 0; i < mods.Count; i++)
                 {
-                    var name = fileName.Split('\\');
-                    ZipFile.ExtractToDirectory(fileName, tmpFolder);
-                    if (!InstallMod(tmpFolder, name))
-                        MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Directory.Delete(tmpFolder, true);
-                    var mods = App.GetMods();
-                    for (int i = 0; i < mods.Count; i++)
-                    {
-                        if (mods[i].Contains(name[name.GetLength(0) - 1].Split('.')[0]))
-                            App.Settings.settings.mod_installed.Insert(i, false);
-                    }
+                    if (mods[i].Contains(name[name.GetLength(0) - 1].Split('.')[0]))
+                        App.Settings.settings.mod_installed.Insert(i, false);
                 }
             }
             UpdateModsList();
