@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MhwModManager"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="SMM - Settings" Height="400" Width="320">
     <ScrollViewer>
         <StackPanel Margin="10,0">
@@ -29,6 +30,7 @@
                 <Button Name="validateBTN" Content="Validate" Click="validateBTN_Click" Width="55" Padding="5" Margin="5" Style="{StaticResource ValidateButton}" />
                 <Button Name="cancelBTN" Content="Cancel" Click="cancelBTN_Click" Width="55" Padding="5" Margin="5" Style="{StaticResource CancelButton}" />
             </WrapPanel>
+            <Label Name="versionLbl" HorizontalAlignment="Right" />
         </StackPanel>
     </ScrollViewer>
 </Window>

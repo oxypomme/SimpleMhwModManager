@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace MhwModManager
 {
@@ -19,6 +20,7 @@ namespace MhwModManager
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
+        public static List<(ModInfo, string)> Mods;
 
         public App()
         {
@@ -37,19 +39,36 @@ namespace MhwModManager
             }
         }
 
-        public static List<string> GetMods()
+        public static void GetMods()
         {
-            var modList = new List<string>();
+            // This list contain the ModInfos and the folder name of each mod
+            Mods = new List<(ModInfo, string)>();
 
             if (!Directory.Exists(ModsPath))
                 Directory.CreateDirectory(ModsPath);
 
             var modFolder = new DirectoryInfo(ModsPath);
 
+            int i = 0;
             foreach (var mod in modFolder.GetDirectories())
-                modList.Add(mod.Name);
-
-            return modList;
+            {
+                var info = new ModInfo();
+                info.GenInfo(mod.FullName);
+                // If the order change the generation of the list
+                if (info.order >= Mods.Count)
+                    Mods.Add((info, mod.Name));
+                else
+                {
+                    if (i > 0)
+                        if (info.order == Mods[i - 1].Item1.order || info.order == Mods[i + 1].Item1.order)
+                        {
+                            info.order++;
+                            info.ParseSettingsJSON(mod.FullName);
+                        }
+                    Mods.Insert(info.order, (info, mod.Name));
+                }
+                i++;
+            }
         }
 
         public async static void Updater()
@@ -63,6 +82,53 @@ namespace MhwModManager
                 var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
+            }
+        }
+    }
+
+    public class ModInfo
+    {
+        public bool activated { get; set; }
+        public int order { get; set; }
+        public string name { get; set; }
+
+        public void GenInfo(string path, int? index = null)
+        {
+            if (!File.Exists(Path.Combine(path, "mod.info")))
+            {
+                activated = false;
+                if (index != null)
+                    order = index.Value;
+                else
+                    order = App.Mods.Count();
+
+                // Get the name of the extracted folder (without the .zip at the end), not the full path
+                var foldName = path.Split('\\');
+                name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
+
+                ParseSettingsJSON(path);
+            }
+            else
+            {
+                ModInfo sets;
+                using (StreamReader file = new StreamReader(Path.Combine(path, "mod.info")))
+                {
+                    sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
+                    file.Close();
+                }
+
+                activated = sets.activated;
+                order = sets.order;
+                name = sets.name;
+            }
+        }
+
+        public void ParseSettingsJSON(string path)
+        {
+            using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
+            {
+                file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
+                file.Close();
             }
         }
     }

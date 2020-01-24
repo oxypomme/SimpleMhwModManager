@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MhwModManager"
         mc:Ignorable="d"
-        Title="Simple MHW Mod Manager" Height="400" Width="320">
+        Title="Simple MHW Mod Manager" Height="400" Width="350">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -33,7 +33,7 @@
                 <Button Name="webMod" Click="webMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/web.png" />
                 </Button>
-                <Button Name="settingsMod" Click="settingsMod_Click" ToolTip="Link to Nexus" Width="24" HorizontalAlignment="Left">
+                <Button Name="settingsMod" Click="settingsMod_Click" ToolTip="Options" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/settings.png" />
                 </Button>
             </StackPanel>

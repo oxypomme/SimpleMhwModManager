@@ -95,13 +95,18 @@
             </Setter>
         </Style>
 
-        <Style TargetType="{x:Type ListBoxItem}">
+        <Style x:Key="CheckBoxListItem" TargetType="{x:Type CheckBox}">
             <Setter Property="ContextMenu">
                 <Setter.Value>
                     <ContextMenu>
-                        <MenuItem Name="remModContext" Header="Remove Mod" Click="remMod_Click">
+                        <MenuItem Tag="rem" Header="Remove Mod">
                             <MenuItem.Icon>
                                 <Image Source="icons/remove.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Tag="edit" Header="Edit Mod">
+                            <MenuItem.Icon>
+                                <Image Source="icons/edit.png" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
