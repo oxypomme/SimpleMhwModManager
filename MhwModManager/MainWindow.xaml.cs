@@ -101,16 +101,6 @@ namespace MhwModManager
                     Directory.Delete(tmpFolder, true);
 
                     App.GetMods(); // Refresh the modlist
-
-                    for (int i = 0; i < App.Mods.Count; i++)
-                    {
-                        var name = splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0];
-                        if (App.Mods[i].Item1.name.Contains(name))
-                        {
-                            var info = new ModInfo();
-                            info.GenInfo(Path.Combine(App.ModsPath, name), i);
-                        }
-                    }
                 }
             }
             UpdateModsList();
