@@ -152,7 +152,7 @@ namespace MhwModManager
         {
             foreach (var dir in Directory.GetDirectories(path))
             {
-                if (dir.Contains("nativePC"))
+                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
                 {
                     if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
                         // If the mod isn't installed
