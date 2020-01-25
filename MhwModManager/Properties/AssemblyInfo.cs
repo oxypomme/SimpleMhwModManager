@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("MHW Mod Manager")]
 [assembly: AssemblyDescription("A simple mod manager for Monster Hunter World")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("OxyTom")]
 [assembly: AssemblyProduct("MHW Mod Manager")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
