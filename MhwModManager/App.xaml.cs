@@ -59,7 +59,7 @@ namespace MhwModManager
                     Mods.Add((info, mod.Name));
                 else
                 {
-                    if (i > 0)
+                    if (i > 0 && i < Mods.Count())
                         if (info.order == Mods[i - 1].Item1.order || info.order == Mods[i + 1].Item1.order)
                         {
                             info.order++;
