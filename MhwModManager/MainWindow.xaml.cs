@@ -29,9 +29,7 @@ namespace MhwModManager
 
             UpdateModsList();
 
-#if RELEASE
             App.Updater();
-#endif
         }
 
         private void UpdateModsList()
