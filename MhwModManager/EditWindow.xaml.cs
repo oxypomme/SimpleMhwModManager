@@ -27,8 +27,8 @@ namespace MhwModManager
                     nameTB.Text = mod.Item1.name;
                     nameTB.TextChanged += nameTB_TextChanged;
 
-                    order = mod.Item1.order;
-                    orderTB.Text = mod.Item1.order.ToString();
+                    order = mod.Item1.order + 1;
+                    orderTB.Text = order.ToString();
                     orderTB.TextChanged += orderTB_TextChanged;
 
                     break;
