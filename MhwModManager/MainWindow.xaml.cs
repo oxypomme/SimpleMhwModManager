@@ -177,6 +177,8 @@ namespace MhwModManager
                 var index = int.Parse(caller.Tag.ToString());
                 Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
                 App.Mods.RemoveAt(index);
+                for (int i = index; i < App.Mods.Count(); i++)
+                    App.Mods[i].Item1.order = i;
             }
             UpdateModsList();
         }
@@ -241,7 +243,7 @@ namespace MhwModManager
             foreach (FileInfo file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
-                if (!file.Name.Contains("mod.info"))
+                if (!file.Name.Equals("mod.info"))
                     if (!File.Exists(temppath))
                         file.CopyTo(temppath, false);
             }
@@ -304,6 +306,11 @@ namespace MhwModManager
             var index = int.Parse(caller.Tag.ToString());
             Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
             App.Mods.RemoveAt(index);
+            for (int i = index; i < App.Mods.Count(); i++)
+            {
+                App.Mods[i].Item1.order = i;
+                App.Mods[i].Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, App.Mods[i].Item2));
+            }
 
             UpdateModsList();
         }
