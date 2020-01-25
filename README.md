@@ -22,6 +22,13 @@ A button to add a mod, a second one to delete a mod.
 
 ## Changelog
 
+- v0.0.5
+  - [FIXED] Changing order broke the program
+  - [FIXED] The search of nativePC in the mod is now case insensitive
+  - Correct way of showing the order
+  - Signals conflicts
+- v0.0.4
+  - Setup now avaiable
 - v0.0.3
   - [FIXED] Can't activate a new mod !
 - v0.0.2
