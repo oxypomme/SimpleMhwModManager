@@ -17,7 +17,15 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
+#if (!DEBUG && !TRACE)
+        //It's the portable version
+
+        public static string AppData = "Data/";
+
+#else
         public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SMMM");
+
+#endif
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
