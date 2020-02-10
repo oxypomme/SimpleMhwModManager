@@ -175,6 +175,7 @@ namespace MhwModManager
             {
                 var caller = (mod as CheckBox);
                 var index = int.Parse(caller.Tag.ToString());
+                App.logStream.WriteLine($"Mod {App.Mods[index].Item1.name} removed");
                 Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
                 App.Mods.RemoveAt(index);
                 for (int i = index; i < App.Mods.Count(); i++)
@@ -186,6 +187,7 @@ namespace MhwModManager
         private void startGame_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(Path.Combine(App.Settings.settings.mhw_path, "MonsterHunterWorld.exe"));
+            App.logStream.WriteLine($"MHW Started");
         }
 
         private void refreshMod_Click(object sender, RoutedEventArgs e)
@@ -212,13 +214,17 @@ namespace MhwModManager
             var mod = Path.Combine(App.ModsPath, App.Mods[index].Item2);
 
             if ((sender as CheckBox).IsChecked.Value == true)
+            {
                 // Install the mod
                 DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
+                App.logStream.WriteLine($"{mod} installed");
+            }
             else
             {
                 // Desinstall the mod
                 DeleteMod(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                 CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                App.logStream.WriteLine($"{mod} unistalled");
             }
 
             var info = App.Mods[index].Item1;
