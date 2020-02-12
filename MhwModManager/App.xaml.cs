@@ -37,6 +37,10 @@ namespace MhwModManager
         public App()
         {
             Settings.GenConfig();
+            if (Settings.settings.dark_mode)
+            {
+            }
+
             if (!Directory.Exists(Settings.settings.mhw_path))
             {
                 logStream.WriteLine("MHW not found", "CRITICAL");

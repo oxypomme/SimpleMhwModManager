@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MhwModManager
 {
@@ -16,6 +17,9 @@ namespace MhwModManager
         public EditWindow(string path)
         {
             InitializeComponent();
+
+            MakeDarkTheme();
+
             modPath = path;
             int i = 0;
             foreach (var mod in App.Mods)
@@ -57,6 +61,15 @@ namespace MhwModManager
             }
             else
                 MessageBox.Show("The order must be a number !", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void MakeDarkTheme()
+        {
+            var converter = new BrushConverter();
+            if (App.Settings.settings.dark_mode)
+                Background = (Brush)converter.ConvertFromString("#FF171717");
+            else
+                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
         }
 
         private void cancelBTN_Click(object sender, RoutedEventArgs e)

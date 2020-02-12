@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MhwModManager"
         mc:Ignorable="d"
-        Title="Simple MHW Mod Manager" Height="400" Width="350">
+        Title="Simple MHW Mod Manager" Height="400" Width="350" Background="#FF171717">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -18,7 +18,7 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Image Source="icons/logo.ico" Width="24" Grid.Column="0" />
-            <StackPanel Orientation="Horizontal" Margin="3" Grid.Column="1">
+            <StackPanel Name="btnsSP" Orientation="Horizontal" Margin="3" Grid.Column="1">
                 <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/add.png" />
                 </Button>

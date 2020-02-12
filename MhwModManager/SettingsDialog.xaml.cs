@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System.Windows;
 using WinForms = System.Windows.Forms;
 using System;
+using System.Windows.Media;
 
 namespace MhwModManager
 {
@@ -103,7 +104,17 @@ namespace MhwModManager
         {
             InitializeComponent();
             InitializeSettings();
+            MakeDarkTheme();
             versionLbl.Content = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        private void MakeDarkTheme()
+        {
+            var converter = new BrushConverter();
+            if (App.Settings.settings.dark_mode)
+                Background = (Brush)converter.ConvertFromString("#FF171717");
+            else
+                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
         }
 
         private void browseBTN_Click(object sender, RoutedEventArgs e)
@@ -126,7 +137,7 @@ namespace MhwModManager
             else
                 darkmodeCB.Content = "Disabled";
 
-            /* WIP */
+            MakeDarkTheme();
         }
 
         private void InitializeSettings()

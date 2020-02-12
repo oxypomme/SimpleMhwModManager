@@ -27,9 +27,34 @@ namespace MhwModManager
         {
             InitializeComponent();
 
+            MakeDarkTheme();
+
             UpdateModsList();
 
             App.Updater();
+        }
+
+        private void MakeDarkTheme()
+        {
+            var converter = new BrushConverter();
+            if (App.Settings.settings.dark_mode)
+            {
+                Background = (Brush)converter.ConvertFromString("#FF171717");
+
+                for (int i = 0; i < btnsSP.Children.Count; i++)
+                {
+                    Button btn;
+                    try
+                    {
+                        btn = (Button)btnsSP.Children[i];
+                    }
+                    catch (InvalidCastException) { i++; btn = (Button)btnsSP.Children[i]; }
+                    if (btn.Content != null)
+                        (btn.Content as Image).Source = App.MakeDarkTheme((btn.Content as Image).Source as BitmapSource);
+                }
+            }
+            else
+                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
         }
 
         private void UpdateModsList()
@@ -205,6 +230,7 @@ namespace MhwModManager
             var settingsWindow = new SettingsDialog();
             settingsWindow.Owner = Application.Current.MainWindow;
             settingsWindow.ShowDialog();
+            MakeDarkTheme();
         }
 
         private void itemChecked(object sender, RoutedEventArgs e)
