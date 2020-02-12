@@ -60,7 +60,7 @@ namespace MhwModManager
                 else
                 {
                     if (i > 0)
-                        if (info.order == Mods[i - 1].Item1.order || info.order == Mods[i + 1].Item1.order)
+                        if (info.order == Mods[i - 1].Item1.order)
                         {
                             info.order++;
                             info.ParseSettingsJSON(mod.FullName);

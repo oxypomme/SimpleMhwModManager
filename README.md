@@ -5,7 +5,7 @@
 
 > Simple MHW Mod Manager, or SMHWMM, or WhateverYouLike is a simple mod manager for Monster Hunter World
 
-NEED [Microsoft .NET Framework 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=30653)﻿, I'll work on an installer, but later.
+NEEDS [Microsoft .NET Framework 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=30653)
 
 ---
 
@@ -22,6 +22,15 @@ A button to add a mod, a second one to delete a mod.
 
 ## Changelog
 
+- v0.0.5
+  - [FIXED] Changing order broke the program
+  - [FIXED] The search of nativePC in the mod is now case insensitive
+  - Correct way of showing the order
+  - Signals conflicts
+- v0.0.4
+  - Setup now avaiable
+- v0.0.3
+  - [FIXED] Can't activate a new mod !
 - v0.0.2
   - [FIXED] The application not showing after setting up the MHW path
   - [FIXED] Warning message when install a new mod

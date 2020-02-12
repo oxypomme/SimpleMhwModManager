@@ -29,9 +29,7 @@ namespace MhwModManager
 
             UpdateModsList();
 
-#if RELEASE
             App.Updater();
-#endif
         }
 
         private void UpdateModsList()
@@ -74,6 +72,48 @@ namespace MhwModManager
             }
 
             App.Settings.ParseSettingsJSON();
+
+            // Check if there's mods conflicts
+            for (int i = 0; i < App.Mods.Count() - 1; i++)
+                if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].Item2), Path.Combine(App.ModsPath, App.Mods[i + 1].Item2)))
+                {
+                    var firstModItem = modListBox.Items[App.Mods[i].Item1.order];
+                    var secondModItem = modListBox.Items[App.Mods[i + 1].Item1.order];
+                    (firstModItem as CheckBox).Foreground = Brushes.Red;
+                    (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].Item1.name;
+                    (secondModItem as CheckBox).Foreground = Brushes.Red;
+                    (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
+                }
+        }
+
+        private bool CheckFiles(string pathFirstMod, string pathSecondMod)
+        {
+            // Get the subdirectories for the mod directory.
+            DirectoryInfo dirFirstMod = new DirectoryInfo(pathFirstMod);
+            DirectoryInfo[] dirsFirstMod = dirFirstMod.GetDirectories();
+
+            // Get the files in the directory
+            FileInfo[] filesFirstMod = dirFirstMod.GetFiles();
+
+            // Get the subdirectories for the nativePC directory.
+            DirectoryInfo dirSecondMod = new DirectoryInfo(pathSecondMod);
+            DirectoryInfo[] dirsSecondMod = dirSecondMod.GetDirectories();
+
+            // Get the files in the directory
+            FileInfo[] filesSecondMod = dirSecondMod.GetFiles();
+
+            foreach (FileInfo firstFile in filesFirstMod)
+                foreach (FileInfo secondFile in filesSecondMod)
+                    if (firstFile.Name == secondFile.Name && firstFile.Name != "mod.info")
+                    {
+                        return false; // return false if conflict
+                    }
+
+            foreach (DirectoryInfo subdirFirstMod in dirsFirstMod)
+                foreach (DirectoryInfo subdirSecondMod in dirsSecondMod)
+                    return CheckFiles(subdirFirstMod.FullName, subdirSecondMod.FullName);
+
+            return true; // return true if everything's fine
         }
 
         private void addMod_Click(object sender, RoutedEventArgs e)
@@ -112,7 +152,7 @@ namespace MhwModManager
         {
             foreach (var dir in Directory.GetDirectories(path))
             {
-                if (dir.Contains("nativePC"))
+                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
                 {
                     if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
                         // If the mod isn't installed
@@ -137,6 +177,8 @@ namespace MhwModManager
                 var index = int.Parse(caller.Tag.ToString());
                 Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
                 App.Mods.RemoveAt(index);
+                for (int i = index; i < App.Mods.Count(); i++)
+                    App.Mods[i].Item1.order = i;
             }
             UpdateModsList();
         }
@@ -201,7 +243,7 @@ namespace MhwModManager
             foreach (FileInfo file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
-                if (!file.Name.Contains("mod.info"))
+                if (!file.Name.Equals("mod.info"))
                     if (!File.Exists(temppath))
                         file.CopyTo(temppath, false);
             }
@@ -264,6 +306,11 @@ namespace MhwModManager
             var index = int.Parse(caller.Tag.ToString());
             Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
             App.Mods.RemoveAt(index);
+            for (int i = index; i < App.Mods.Count(); i++)
+            {
+                App.Mods[i].Item1.order = i;
+                App.Mods[i].Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, App.Mods[i].Item2));
+            }
 
             UpdateModsList();
         }

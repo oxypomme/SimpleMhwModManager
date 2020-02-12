@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("MHW Mod Manager")]
 [assembly: AssemblyDescription("A simple mod manager for Monster Hunter World")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("OxyTom")]
 [assembly: AssemblyProduct("MHW Mod Manager")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
@@ -51,6 +51,6 @@ using System.Windows;
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de build et de révision par défaut
 // en utilisant '*', comme indiqué ci-dessous :
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.4.0")]
-[assembly: AssemblyFileVersion("0.0.4.0")]
+[assembly: AssemblyVersion("0.0.5.0")]
+[assembly: AssemblyFileVersion("0.0.5.0")]
 [assembly: NeutralResourcesLanguage("en")]
