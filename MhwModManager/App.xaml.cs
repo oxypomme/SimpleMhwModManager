@@ -9,6 +9,8 @@ using System.IO;
 using WinForms = System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Text;
+using System.Windows.Media.Imaging;
+using System.Drawing;
 
 namespace MhwModManager
 {
@@ -102,6 +104,66 @@ namespace MhwModManager
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
             }
         }
+
+        /* credits to https://github.com/WildGoat07 */
+
+        public static BitmapImage ConvertBitmapToWPF(Bitmap src)
+        {
+            MemoryStream ms = new MemoryStream();
+            src.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = ms;
+            image.EndInit();
+            return image;
+        }
+
+        public static Bitmap ConvertWPFToBitmap(BitmapSource src)
+        {
+            //Credits to : https://stackoverflow.com/a/6484754
+            Bitmap bitmap = null;
+            using (var outStream = new MemoryStream())
+            {
+                var enc = new PngBitmapEncoder();
+                enc.Frames.Add(BitmapFrame.Create(src));
+                enc.Save(outStream);
+                bitmap = new Bitmap(outStream);
+            }
+
+            return new Bitmap(bitmap);
+        }
+
+        public static Color GetDarkThemeColor(Color c)
+        {
+            var wpfColor = Color.FromArgb(c.A, c.R, c.G, c.B);
+            wpfColor = GetDarkThemeColor(wpfColor);
+            return ToClassic(GetDarkThemeColor(ToWPF(c)));
+        }
+
+        public static BitmapSource MakeDarkTheme(BitmapSource image)
+        {
+            var src = ConvertWPFToBitmap(image);
+            MakeDarkTheme(src);
+            return ConvertBitmapToWPF(MakeDarkTheme(src));
+        }
+
+        public static Bitmap MakeDarkTheme(Bitmap bitmap)
+        {
+            bitmap = new Bitmap(bitmap);
+            for (int x = 0; x < bitmap.Width; x++)
+            {
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    bitmap.SetPixel(x, y, GetDarkThemeColor(bitmap.GetPixel(x, y)));
+                }
+            }
+            return bitmap;
+        }
+
+        public static Color ToClassic(Color c) => Color.FromArgb(c.A, c.R, c.G, c.B);
+
+        public static Color ToWPF(Color c) => Color.FromArgb(c.A, c.R, c.G, c.B);
     }
 
     public class LogStream
