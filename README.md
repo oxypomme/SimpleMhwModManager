@@ -24,6 +24,11 @@ A button to add a mod, a second one to delete a mod.
 
 ## Changelog
 
+- v0.0.7
+  - Better logs
+  - Removed useless code
+  - Dark Theme \o/
+  - Better Lighty Theme
 - v0.0.6
   - [FIXED] If Steam isn't installed, the manager will work (hello cracked games)
   - Portable version is now available (somewhat, because it's still needs the .NET Framework) !
