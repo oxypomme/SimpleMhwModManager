@@ -68,51 +68,60 @@ namespace MhwModManager
 
         public static void GetMods()
         {
-            // This list contain the ModInfos and the folder name of each mod
-            Mods = new List<(ModInfo, string)>();
-
-            if (!Directory.Exists(ModsPath))
-                Directory.CreateDirectory(ModsPath);
-
-            var modFolder = new DirectoryInfo(ModsPath);
-
-            int i = 0;
-            foreach (var mod in modFolder.GetDirectories())
+            try
             {
-                var info = new ModInfo();
-                info.GenInfo(mod.FullName);
-                // If the order change the generation of the list
-                if (info.order >= Mods.Count)
-                    Mods.Add((info, mod.Name));
-                else
+                logStream.WriteLine("Updating modlist...");
+                // This list contain the ModInfos and the folder name of each mod
+                Mods = new List<(ModInfo, string)>();
+
+                if (!Directory.Exists(ModsPath))
+                    Directory.CreateDirectory(ModsPath);
+
+                var modFolder = new DirectoryInfo(ModsPath);
+
+                int i = 0;
+                foreach (var mod in modFolder.GetDirectories())
                 {
-                    if (i > 0)
-                        if (info.order == Mods[i - 1].Item1.order)
-                        {
-                            info.order++;
-                            info.ParseSettingsJSON(mod.FullName);
-                        }
-                    Mods.Insert(info.order, (info, mod.Name));
-                    logStream.WriteLine($"Mod added : {info.name}");
+                    var info = new ModInfo();
+                    info.GenInfo(mod.FullName);
+                    // If the order change the generation of the list
+                    if (info.order >= Mods.Count)
+                        Mods.Add((info, mod.Name));
+                    else
+                    {
+                        if (i > 0)
+                            if (info.order == Mods[i - 1].Item1.order)
+                            {
+                                info.order++;
+                                info.ParseSettingsJSON(mod.FullName);
+                            }
+                        Mods.Insert(info.order, (info, mod.Name));
+                        logStream.WriteLine($"Mod added : {info.name}");
+                    }
+                    i++;
                 }
-                i++;
-                logStream.WriteLine("ModList updated");
+                logStream.WriteLine("Modlist updated !");
             }
+            catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
         }
 
         public async static void Updater()
         {
-            /* Credits to WildGoat07 : https://github.com/WildGoat07 */
-            var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("SimpleMhwModManager"));
-            var lastRelease = await github.Repository.Release.GetLatest(234864718);
-            var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            logStream.WriteLine($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
-            if (new Version(lastRelease.TagName) > current)
+            try
             {
-                var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                if (result == MessageBoxResult.Yes)
-                    System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
+                /* Credits to WildGoat07 : https://github.com/WildGoat07 */
+                var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("SimpleMhwModManager"));
+                var lastRelease = await github.Repository.Release.GetLatest(234864718);
+                var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                logStream.WriteLine($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
+                if (new Version(lastRelease.TagName) > current)
+                {
+                    var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    if (result == MessageBoxResult.Yes)
+                        System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
+                }
             }
+            catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
         }
     }
 
@@ -141,47 +150,55 @@ namespace MhwModManager
 
         public void GenInfo(string path, int? index = null)
         {
-            if (!File.Exists(Path.Combine(path, "mod.info")))
+            try
             {
-                activated = false;
-                if (index != null)
-                    order = index.Value;
-                else
-                    order = App.Mods.Count();
-
-                // Get the name of the extracted folder (without the .zip at the end), not the full path
-                var foldName = path.Split('\\');
-                name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
-
-                App.logStream.WriteLine($"Mod {name} info not found");
-
-                ParseSettingsJSON(path);
-            }
-            else
-            {
-                ModInfo sets;
-                using (StreamReader file = new StreamReader(Path.Combine(path, "mod.info")))
+                if (!File.Exists(Path.Combine(path, "mod.info")))
                 {
-                    sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
-                    file.Close();
+                    activated = false;
+                    if (index != null)
+                        order = index.Value;
+                    else
+                        order = App.Mods.Count();
+
+                    // Get the name of the extracted folder (without the .zip at the end), not the full path
+                    var foldName = path.Split('\\');
+                    name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
+
+                    App.logStream.WriteLine($"Mod {name} info not found");
+
+                    ParseSettingsJSON(path);
                 }
+                else
+                {
+                    ModInfo sets;
+                    using (StreamReader file = new StreamReader(Path.Combine(path, "mod.info")))
+                    {
+                        sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
+                        file.Close();
+                    }
 
-                activated = sets.activated;
-                order = sets.order;
-                name = sets.name;
+                    activated = sets.activated;
+                    order = sets.order;
+                    name = sets.name;
 
-                App.logStream.WriteLine($"Mod {name} info found");
+                    App.logStream.WriteLine($"Mod {name} info found");
+                }
             }
+            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
         }
 
         public void ParseSettingsJSON(string path)
         {
-            App.logStream.WriteLine("Mod info updated");
-            using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
+            try
             {
-                file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
-                file.Close();
+                App.logStream.WriteLine("Mod info updated");
+                using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
+                {
+                    file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
+                    file.Close();
+                }
             }
+            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
         }
     }
 }
