@@ -416,5 +416,10 @@ namespace MhwModManager
             editWindow.ShowDialog();
             UpdateModsList();
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            App.logStream.Close();
+        }
     }
 }

@@ -164,6 +164,12 @@ namespace MhwModManager
             writer.WriteLine($"[{status}] {DateTime.Now} - {value}");
             writer.Flush();
         }
+
+        public void Close()
+        {
+            writer.Flush();
+            writer.Close();
+        }
     }
 
     public class ModInfo
