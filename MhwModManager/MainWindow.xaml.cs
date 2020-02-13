@@ -50,11 +50,36 @@ namespace MhwModManager
                     }
                     catch (InvalidCastException) { i++; btn = (Button)btnsSP.Children[i]; }
                     if (btn.Content != null)
-                        (btn.Content as Image).Source = App.MakeDarkTheme((btn.Content as Image).Source as BitmapSource);
+                        (btn.Content as Image).Source = Utilities.MakeDarkTheme((btn.Content as Image).Source as BitmapSource);
                 }
+                (startGame.Content as Image).Source = Utilities.MakeDarkTheme((startGame.Content as Image).Source as BitmapSource);
             }
             else
+            {
                 Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
+                for (int i = 0; i < btnsSP.Children.Count; i++)
+                {
+                    Button btn;
+                    try
+                    {
+                        btn = (Button)btnsSP.Children[i];
+                    }
+                    catch (InvalidCastException) { i++; btn = (Button)btnsSP.Children[i]; }
+
+                    var icon = new BitmapImage();
+                    icon.BeginInit();
+                    icon.UriSource = new Uri($"pack://application:,,,/MhwModManager;component/icons/{btn.Name.Replace("Mod", "")}.png", UriKind.RelativeOrAbsolute);
+                    icon.EndInit();
+
+                    (btn.Content as Image).Source = icon;
+                }
+
+                var startIcon = new BitmapImage();
+                startIcon.BeginInit();
+                startIcon.UriSource = new Uri("pack://application:,,,/MhwModManager;component/icons/launch.png", UriKind.RelativeOrAbsolute);
+                startIcon.EndInit();
+                (startGame.Content as Image).Source = startIcon;
+            }
         }
 
         private void UpdateModsList()

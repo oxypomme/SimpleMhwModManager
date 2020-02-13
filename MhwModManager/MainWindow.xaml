@@ -22,7 +22,7 @@
                 <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/add.png" />
                 </Button>
-                <Button Name="remMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
+                <Button Name="removeMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/remove.png" />
                 </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />

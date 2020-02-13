@@ -129,6 +129,7 @@
     <Compile Include="SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities.cs" />
     <Page Include="DarkTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
