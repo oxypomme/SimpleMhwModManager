@@ -28,23 +28,13 @@ namespace MhwModManager
         public static List<(ModInfo, string)> Mods;
         public static LogStream logStream = new LogStream("last.log");
 
-        public static ResourceDictionary darkRessources = new ResourceDictionary();
-
         public App()
         {
             try
             {
                 Settings.GenConfig();
 
-                darkRessources.Source = new Uri("pack://application:,,,/MhwModManager;component/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
-
-                if (Settings.settings.dark_mode)
-                {
-                    var darkRessources = new ResourceDictionary();
-                    darkRessources.Source = new Uri("pack://application:,,,/MhwModManager;component/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
-                    Current.Resources.MergedDictionaries.Add(darkRessources);
-                    Current.MainWindow.UpdateLayout();
-                }
+                ReloadTheme();
 
                 if (!Directory.Exists(Settings.settings.mhw_path))
                 {
@@ -64,8 +54,36 @@ namespace MhwModManager
                         Environment.Exit(0);
                     }
                 }
+
+                Updater();
             }
             catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
+        }
+
+        public static void ReloadTheme()
+        {
+            Current.Resources.MergedDictionaries.Clear();
+
+            var ressource = new ResourceDictionary();
+
+            if (Settings.settings.dark_mode)
+            {
+                ressource.Source = new Uri("pack://application:,,,/MhwModManager;component/Themes/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
+                Current.Resources.MergedDictionaries.Add(ressource);
+            }
+            else
+            {
+                ressource.Source = new Uri("pack://application:,,,/MhwModManager;component/Themes/LightTheme.xaml", UriKind.RelativeOrAbsolute);
+                Current.Resources.MergedDictionaries.Add(ressource);
+            }
+
+            ressource = new ResourceDictionary();
+            ressource.Source = new Uri("pack://application:,,,/MhwModManager;component/Themes/Theme.xaml", UriKind.RelativeOrAbsolute);
+            Current.Resources.MergedDictionaries.Add(ressource);
+
+            (Current.MainWindow as MainWindow).MakeDarkTheme();
+
+            try { Current.MainWindow.UpdateLayout(); } catch (Exception) { }
         }
 
         public static void GetMods()
@@ -129,18 +147,19 @@ namespace MhwModManager
 
     public class LogStream
     {
-        private string Path = null;
+        private StreamWriter writer;
 
         public LogStream(string path)
         {
-            Path = path;
-            using (StreamWriter writer = new StreamWriter(Path)) { }
+            writer = new StreamWriter(path);
+            writer.Close();
+            writer = File.AppendText(path);
         }
 
         public void WriteLine(string value, string status = "INFO")
         {
-            using (StreamWriter writer = File.AppendText(Path))
-                writer.WriteLine($"[{status}] {DateTime.Now} - {value}");
+            writer.WriteLine($"[{status}] {DateTime.Now} - {value}");
+            writer.Flush();
         }
     }
 

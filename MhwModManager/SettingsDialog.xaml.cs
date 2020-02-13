@@ -112,9 +112,15 @@ namespace MhwModManager
         {
             var converter = new BrushConverter();
             if (App.Settings.settings.dark_mode)
+            {
                 Background = (Brush)converter.ConvertFromString("#FF171717");
+                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FFFFFFFF");
+            }
             else
+            {
                 Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
+                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FF171717");
+            }
         }
 
         private void browseBTN_Click(object sender, RoutedEventArgs e)
@@ -126,6 +132,8 @@ namespace MhwModManager
 
         private void cancelBTN_Click(object sender, RoutedEventArgs e)
         {
+            App.Settings.GenConfig();
+            App.ReloadTheme();
             Close();
         }
 
@@ -137,18 +145,7 @@ namespace MhwModManager
             else
                 darkmodeCB.Content = "Disabled";
 
-            if (App.Settings.settings.dark_mode)
-            {
-                Application.Current.Resources.MergedDictionaries.Add(App.darkRessources);
-            }
-            else
-            {
-                Application.Current.Resources.MergedDictionaries.Remove(App.darkRessources);
-            }
-
-            UpdateLayout();
-            (Application.Current.MainWindow as MainWindow).MakeDarkTheme();
-
+            App.ReloadTheme();
             MakeDarkTheme();
         }
 
@@ -161,6 +158,7 @@ namespace MhwModManager
         private void validateBTN_Click(object sender, RoutedEventArgs e)
         {
             App.Settings.ParseSettingsJSON();
+            App.ReloadTheme();
             Close();
         }
     }

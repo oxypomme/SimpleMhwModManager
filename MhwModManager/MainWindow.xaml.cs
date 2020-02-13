@@ -12,19 +12,19 @@ using System.IO.Compression;
 namespace MhwModManager
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
+    /// Logique d'interaction pour MainWindow.xaml-
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool isDarkTheme = false;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            MakeDarkTheme();
-
             UpdateModsList();
 
-            App.Updater();
+            App.ReloadTheme();
         }
 
         public void MakeDarkTheme()
@@ -32,7 +32,7 @@ namespace MhwModManager
             try
             {
                 var converter = new BrushConverter();
-                if (App.Settings.settings.dark_mode)
+                if (App.Settings.settings.dark_mode && !isDarkTheme)
                 {
                     Background = (Brush)converter.ConvertFromString("#FF171717");
 
@@ -48,10 +48,12 @@ namespace MhwModManager
                             (btn.Content as Image).Source = Utilities.MakeDarkTheme((btn.Content as Image).Source as BitmapSource);
                     }
                     (startGame.Content as Image).Source = Utilities.MakeDarkTheme((startGame.Content as Image).Source as BitmapSource);
+                    isDarkTheme = true;
                 }
-                else
+                else if (!App.Settings.settings.dark_mode && isDarkTheme)
                 {
                     Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
+
                     for (int i = 0; i < btnsSP.Children.Count; i++)
                     {
                         Button btn;
@@ -67,6 +69,8 @@ namespace MhwModManager
                         icon.EndInit();
 
                         (btn.Content as Image).Source = icon;
+
+                        isDarkTheme = false;
                     }
 
                     var startIcon = new BitmapImage();
