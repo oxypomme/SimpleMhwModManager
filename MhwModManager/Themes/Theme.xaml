@@ -21,29 +21,6 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RegularButton" TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="Black" />
-        <Setter Property="BorderBrush" Value="#c0000000" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="Border" Background="#01000000" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <!--<Setter Property="Background" Value="#48000000" TargetName="Border" />-->
-                            <Setter Property="Background" Value="#48ffffff" TargetName="Border" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#80000000" TargetName="Border" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
     <Style x:Key="ValidateButton" TargetType="{x:Type Button}">
         <Setter Property="Foreground" Value="#ff0096ff" />
         <Setter Property="BorderBrush" Value="#ff0096ff" />
@@ -89,25 +66,6 @@
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="CheckBoxListItem" TargetType="{x:Type CheckBox}">
-        <Setter Property="ContextMenu">
-            <Setter.Value>
-                <ContextMenu>
-                    <MenuItem Tag="rem" Header="Remove Mod">
-                        <MenuItem.Icon>
-                            <Image Source="icons/remove.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Tag="edit" Header="Edit Mod">
-                        <MenuItem.Icon>
-                            <Image Source="icons/edit.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </ContextMenu>
             </Setter.Value>
         </Setter>
     </Style>

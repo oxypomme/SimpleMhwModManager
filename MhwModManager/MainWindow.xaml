@@ -44,7 +44,10 @@
         <ListBox Name="modListBox" Margin="3" Grid.Row="1">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Name="addModContext" Header="Add Mod" Click="addMod_Click">
+                    <MenuItem Name="addModContext" Click="addMod_Click">
+                        <MenuItem.Header>
+                            <TextBlock Margin="10,3,10,0">Add Mod</TextBlock>
+                        </MenuItem.Header>
                         <MenuItem.Icon>
                             <Image Source="icons/add.png" />
                         </MenuItem.Icon>

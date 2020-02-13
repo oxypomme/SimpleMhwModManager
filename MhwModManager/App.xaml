@@ -12,6 +12,47 @@
                 <ResourceDictionary Source="Themes/LightTheme.xaml" />
                 <ResourceDictionary Source="Themes/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="CheckBoxListItem" TargetType="{x:Type CheckBox}">
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu>
+                            <MenuItem Tag="rem">
+                                <MenuItem.Header>
+                                    <TextBlock Margin="10,3,10,0">Remove Mod</TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="icons/remove.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Tag="edit">
+                                <MenuItem.Header>
+                                    <TextBlock Margin="10,3,10,0">Edit Mod</TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="icons/edit.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="{x:Type ContextMenu}">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+                <Setter Property="HasDropShadow" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContextMenu}">
+                            <Border x:Name="Border" Background="{DynamicResource ContainerBackground}" BorderBrush="{DynamicResource ContainerBorder}" BorderThickness="1">
+                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
