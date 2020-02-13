@@ -8,6 +8,7 @@ using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace MhwModManager
 {
@@ -16,26 +17,40 @@ namespace MhwModManager
     /// </summary>
     public partial class App : Application
     {
+#if (!DEBUG && !TRACE)
+        //It's the portable version
+
+        public static string AppData = "Data/";
+
+#else
         public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SMMM");
+
+#endif
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
         public static List<(ModInfo, string)> Mods;
+        public static LogStream logStream = new LogStream("last.log");
 
         public App()
         {
             Settings.GenConfig();
             if (!Directory.Exists(Settings.settings.mhw_path))
             {
+                logStream.WriteLine("MHW not found", "CRITICAL");
                 MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 var dialog = new WinForms.FolderBrowserDialog();
                 if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                 {
+                    logStream.WriteLine("MHW path set");
                     Settings.settings.mhw_path = dialog.SelectedPath;
                     Settings.ParseSettingsJSON();
                 }
                 else
+                {
+                    logStream.WriteLine("MHW path not set", "FATAL");
                     Environment.Exit(0);
+                }
             }
         }
 
@@ -66,8 +81,10 @@ namespace MhwModManager
                             info.ParseSettingsJSON(mod.FullName);
                         }
                     Mods.Insert(info.order, (info, mod.Name));
+                    logStream.WriteLine($"Mod added : {info.name}");
                 }
                 i++;
+                logStream.WriteLine("ModList updated");
             }
         }
 
@@ -77,12 +94,30 @@ namespace MhwModManager
             var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("SimpleMhwModManager"));
             var lastRelease = await github.Repository.Release.GetLatest(234864718);
             var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            logStream.WriteLine($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
             if (new Version(lastRelease.TagName) > current)
             {
                 var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                     System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
             }
+        }
+    }
+
+    public class LogStream
+    {
+        private string Path = null;
+
+        public LogStream(string path)
+        {
+            Path = path;
+            using (StreamWriter writer = new StreamWriter(Path)) ;
+        }
+
+        public void WriteLine(string value, string status = "INFO")
+        {
+            using (StreamWriter writer = File.AppendText(Path))
+                writer.WriteLine($"[{status}] {DateTime.Now} - {value}");
         }
     }
 
@@ -106,6 +141,8 @@ namespace MhwModManager
                 var foldName = path.Split('\\');
                 name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
 
+                App.logStream.WriteLine($"Mod {name} info not found");
+
                 ParseSettingsJSON(path);
             }
             else
@@ -120,11 +157,14 @@ namespace MhwModManager
                 activated = sets.activated;
                 order = sets.order;
                 name = sets.name;
+
+                App.logStream.WriteLine($"Mod {name} info found");
             }
         }
 
         public void ParseSettingsJSON(string path)
         {
+            App.logStream.WriteLine("Mod info updated");
             using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
             {
                 file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
