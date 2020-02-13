@@ -124,8 +124,6 @@ namespace MhwModManager
                     modListBox.Items.Add(modItem);
                 }
 
-                App.Settings.ParseSettingsJSON();
-
                 // Check if there's mods conflicts
                 for (int i = 0; i < App.Mods.Count() - 1; i++)
                     if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].Item2), Path.Combine(App.ModsPath, App.Mods[i + 1].Item2)))
@@ -291,14 +289,14 @@ namespace MhwModManager
                 {
                     // Install the mod
                     DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
-                    App.logStream.WriteLine($"{mod} installed");
+                    App.logStream.WriteLine($"{App.Mods[index].Item1.name} installed");
                 }
                 else
                 {
                     // Desinstall the mod
                     DeleteMod(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                     CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                    App.logStream.WriteLine($"{mod} unistalled");
+                    App.logStream.WriteLine($"{App.Mods[index].Item1.name} unistalled");
                 }
 
                 var info = App.Mods[index].Item1;

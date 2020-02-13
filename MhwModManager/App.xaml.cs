@@ -81,9 +81,12 @@ namespace MhwModManager
             ressource.Source = new Uri("pack://application:,,,/MhwModManager;component/Themes/Theme.xaml", UriKind.RelativeOrAbsolute);
             Current.Resources.MergedDictionaries.Add(ressource);
 
-            (Current.MainWindow as MainWindow).MakeDarkTheme();
-
-            try { Current.MainWindow.UpdateLayout(); } catch (Exception) { }
+            try
+            {
+                (Current.MainWindow as MainWindow).MakeDarkTheme();
+                Current.MainWindow.UpdateLayout();
+            }
+            catch (Exception e) { logStream.WriteLine(e.Message, "ERROR"); }
         }
 
         public static void GetMods()
