@@ -36,28 +36,34 @@ namespace MhwModManager
 
         public App()
         {
-            Settings.GenConfig();
-            if (Settings.settings.dark_mode)
+            try
             {
-            }
+                Settings.GenConfig();
+                if (Settings.settings.dark_mode)
+                {
+                    // add xaml dark theme
+                }
 
-            if (!Directory.Exists(Settings.settings.mhw_path))
-            {
-                logStream.WriteLine("MHW not found", "CRITICAL");
-                MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                var dialog = new WinForms.FolderBrowserDialog();
-                if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                if (!Directory.Exists(Settings.settings.mhw_path))
                 {
-                    logStream.WriteLine("MHW path set");
-                    Settings.settings.mhw_path = dialog.SelectedPath;
-                    Settings.ParseSettingsJSON();
-                }
-                else
-                {
-                    logStream.WriteLine("MHW path not set", "FATAL");
-                    Environment.Exit(0);
+                    try { throw new FileNotFoundException(); } catch (FileNotFoundException e) { logStream.WriteLine(e.Message, "CRITICAL"); }
+
+                    MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    var dialog = new WinForms.FolderBrowserDialog();
+                    if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                    {
+                        logStream.WriteLine("MHW path set");
+                        Settings.settings.mhw_path = dialog.SelectedPath;
+                        Settings.ParseSettingsJSON();
+                    }
+                    else
+                    {
+                        logStream.WriteLine("MHW path not set", "FATAL");
+                        Environment.Exit(0);
+                    }
                 }
             }
+            catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
         }
 
         public static void GetMods()
