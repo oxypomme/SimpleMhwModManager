@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MhwModManager"
         mc:Ignorable="d"
+        Closing="Window_Closing"
         Title="Simple MHW Mod Manager" Height="400" Width="350">
     <Grid>
         <Grid.RowDefinitions>
@@ -18,11 +19,11 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Image Source="icons/logo.ico" Width="24" Grid.Column="0" />
-            <StackPanel Orientation="Horizontal" Margin="3" Grid.Column="1">
+            <StackPanel Name="btnsSP" Orientation="Horizontal" Margin="3" Grid.Column="1">
                 <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/add.png" />
                 </Button>
-                <Button Name="remMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
+                <Button Name="removeMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/remove.png" />
                 </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
@@ -44,7 +45,10 @@
         <ListBox Name="modListBox" Margin="3" Grid.Row="1">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Name="addModContext" Header="Add Mod" Click="addMod_Click">
+                    <MenuItem Name="addModContext" Click="addMod_Click">
+                        <MenuItem.Header>
+                            <TextBlock Margin="10,3,10,0">Add Mod</TextBlock>
+                        </MenuItem.Header>
                         <MenuItem.Icon>
                             <Image Source="icons/add.png" />
                         </MenuItem.Icon>
