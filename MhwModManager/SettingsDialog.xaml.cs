@@ -137,6 +137,18 @@ namespace MhwModManager
             else
                 darkmodeCB.Content = "Disabled";
 
+            if (App.Settings.settings.dark_mode)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(App.darkRessources);
+            }
+            else
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(App.darkRessources);
+            }
+
+            UpdateLayout();
+            (Application.Current.MainWindow as MainWindow).MakeDarkTheme();
+
             MakeDarkTheme();
         }
 

@@ -8,7 +8,7 @@
         <ResourceDictionary>
             <!-- Thanks to https://github.com/AngryCarrot789/ -->
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="DarkTheme.xaml" />
+                <!-- <ResourceDictionary Source="DarkTheme.xaml" />-->
                 <ResourceDictionary Source="Style.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

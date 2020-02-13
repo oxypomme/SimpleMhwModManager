@@ -27,7 +27,7 @@ namespace MhwModManager
             App.Updater();
         }
 
-        private void MakeDarkTheme()
+        public void MakeDarkTheme()
         {
             try
             {
@@ -271,7 +271,6 @@ namespace MhwModManager
                 var settingsWindow = new SettingsDialog();
                 settingsWindow.Owner = Application.Current.MainWindow;
                 settingsWindow.ShowDialog();
-                MakeDarkTheme();
             }
             catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
         }

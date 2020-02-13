@@ -28,14 +28,22 @@ namespace MhwModManager
         public static List<(ModInfo, string)> Mods;
         public static LogStream logStream = new LogStream("last.log");
 
+        public static ResourceDictionary darkRessources = new ResourceDictionary();
+
         public App()
         {
             try
             {
                 Settings.GenConfig();
+
+                darkRessources.Source = new Uri("pack://application:,,,/MhwModManager;component/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
+
                 if (Settings.settings.dark_mode)
                 {
-                    // add xaml dark theme
+                    var darkRessources = new ResourceDictionary();
+                    darkRessources.Source = new Uri("pack://application:,,,/MhwModManager;component/DarkTheme.xaml", UriKind.RelativeOrAbsolute);
+                    Current.Resources.MergedDictionaries.Add(darkRessources);
+                    Current.MainWindow.UpdateLayout();
                 }
 
                 if (!Directory.Exists(Settings.settings.mhw_path))
