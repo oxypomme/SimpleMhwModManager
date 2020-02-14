@@ -1,14 +1,13 @@
-﻿using System;
+﻿using SevenZipExtractor;
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Diagnostics;
-using System.IO;
 using WinForms = System.Windows.Forms;
-using System.IO.Compression;
-using SevenZipExtractor;
 
 namespace MhwModManager
 {
@@ -225,9 +224,9 @@ namespace MhwModManager
             return true; // return true if everything's fine
         }
 
-        private void editMod(string folderName)
+        private void editMod((ModInfo, string) modInfo)
         {
-            var editWindow = new EditWindow(folderName);
+            var editWindow = new EditWindow(modInfo);
             editWindow.Owner = Application.Current.MainWindow;
             editWindow.ShowDialog();
             UpdateModsList();
@@ -238,7 +237,7 @@ namespace MhwModManager
             try
             {
                 var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-                editMod(App.Mods[int.Parse(caller.Tag.ToString())].Item2);
+                editMod(App.Mods[(caller.Tag as int?).Value]);
             }
             catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
         }
@@ -367,10 +366,6 @@ namespace MhwModManager
 
                 foreach (var mod in App.Mods)
                 {
-                    // Increase the order count if didn't exist
-                    if (mod.Item1.order >= App.Mods.Count())
-                        mod.Item1.order = App.Mods.Count() - 1;
-
                     var modItem = new CheckBox
                     {
                         Tag = mod.Item1.order,
@@ -397,6 +392,22 @@ namespace MhwModManager
                     }
 
                     modListBox.Items.Add(modItem);
+                }
+
+                // Verify if the list is correct
+                for (int i = 0; i < modListBox.Items.Count; i++)
+                {
+                    if (((modListBox.Items[i] as CheckBox).Tag as int?) != i)
+                    {
+                        var item = modListBox.Items[i] as CheckBox;
+
+                        modListBox.Items.Remove(item);
+                        modListBox.Items.Insert((item.Tag as int?).Value, item);
+
+                        var mod = App.Mods[i];
+                        App.Mods.Remove(mod);
+                        App.Mods.Insert((item.Tag as int?).Value, mod);
+                    }
                 }
 
                 // Check if there's mods conflicts
