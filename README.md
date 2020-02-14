@@ -25,6 +25,7 @@ A button to add a mod, a second one to delete a mod.
 ## Changelog
 
 - v0.0.7
+  - [FIXED] Fixed order bugs
   - [FIXED] Multiselect when adding mods now works
   - Changing the MHW path have now a default path
   - Better logs
