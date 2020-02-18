@@ -2,116 +2,57 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:MhwModManager"
+             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <Style TargetType="{x:Type Button}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Name="Border" Background="#01000000" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#30000000" TargetName="Border" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#60000000" TargetName="Border" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <!-- Thanks to https://github.com/AngryCarrot789/ -->
+            <ResourceDictionary.MergedDictionaries>
+                <!-- <ResourceDictionary Source="DarkTheme.xaml" />-->
+                <ResourceDictionary Source="Themes/LightTheme.xaml" />
+                <ResourceDictionary Source="Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <Style x:Key="RegularButton" TargetType="{x:Type Button}">
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="BorderBrush" Value="#c0000000" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="Border" Background="#01000000" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#48000000" TargetName="Border" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#80000000" TargetName="Border" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="ValidateButton" TargetType="{x:Type Button}">
-            <Setter Property="Foreground" Value="#ff0096ff" />
-            <Setter Property="BorderBrush" Value="#ff0096ff" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="Border" Background="#01000000" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#a00096ff" TargetName="Border" />
-                                <Setter Property="BorderBrush" Value="#ffffffff" />
-                                <Setter Property="Foreground" Value="#ffffffff" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#e00096ff" TargetName="Border" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="CancelButton" TargetType="{x:Type Button}">
-            <Setter Property="Foreground" Value="#ffff0040" />
-            <Setter Property="BorderBrush" Value="#ffff0040" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="Border" Background="#01000000" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#a0ff0042" TargetName="Border" />
-                                <Setter Property="BorderBrush" Value="#ffffffff" />
-                                <Setter Property="Foreground" Value="#ffffffff" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#e0ff0042" TargetName="Border" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+            <Style x:Key="CheckBoxListItem" TargetType="{x:Type CheckBox}">
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu>
+                            <MenuItem Tag="rem">
+                                <MenuItem.Header>
+                                    <TextBlock Margin="10,3,10,0">Remove Mod</TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="icons/remove.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Tag="edit">
+                                <MenuItem.Header>
+                                    <TextBlock Margin="10,3,10,0">Edit Mod</TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="icons/edit.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-        <Style x:Key="CheckBoxListItem" TargetType="{x:Type CheckBox}">
-            <Setter Property="ContextMenu">
-                <Setter.Value>
-                    <ContextMenu>
-                        <MenuItem Tag="rem" Header="Remove Mod">
-                            <MenuItem.Icon>
-                                <Image Source="icons/remove.png" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Tag="edit" Header="Edit Mod">
-                            <MenuItem.Icon>
-                                <Image Source="icons/edit.png" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-                </Setter.Value>
-            </Setter>
-        </Style>
+            <Style TargetType="{x:Type ContextMenu}">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+                <Setter Property="HasDropShadow" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContextMenu}">
+                            <Border x:Name="Border" Background="{DynamicResource ContainerBackground}" BorderBrush="{DynamicResource ContainerBorder}" BorderThickness="1">
+                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

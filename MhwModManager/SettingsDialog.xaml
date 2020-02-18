@@ -13,8 +13,12 @@
             <StackPanel Margin="10,0">
                 <WrapPanel>
                     <TextBlock Text="MHW Path :" />
-                    <TextBox Name="pathTB" Width="190" Height="18" Margin="5,0" />
-                    <Button Name="browseBTN" Content="Browse" Click="browseBTN_Click" Padding="2" Style="{StaticResource RegularButton}" />
+                    <TextBox Name="pathTB" Width="180" Height="18" Margin="5,0" />
+                    <Button Name="browseBTN" Click="browseBTN_Click">
+                        <Border BorderBrush="#FF171717" BorderThickness="1" Padding="3">
+                            <TextBlock Text="Browse" />
+                        </Border>
+                    </Button>
                 </WrapPanel>
             </StackPanel>
             <Separator Height="5" Margin="0,10" />

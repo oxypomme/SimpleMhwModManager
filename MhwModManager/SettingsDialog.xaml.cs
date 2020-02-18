@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System.Windows;
 using WinForms = System.Windows.Forms;
 using System;
+using System.Windows.Media;
 
 namespace MhwModManager
 {
@@ -103,18 +104,37 @@ namespace MhwModManager
         {
             InitializeComponent();
             InitializeSettings();
+            MakeDarkTheme();
             versionLbl.Content = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        private void MakeDarkTheme()
+        {
+            var converter = new BrushConverter();
+            if (App.Settings.settings.dark_mode)
+            {
+                Background = (Brush)converter.ConvertFromString("#FF171717");
+                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FFFFFFFF");
+            }
+            else
+            {
+                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
+                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FF171717");
+            }
         }
 
         private void browseBTN_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new WinForms.FolderBrowserDialog();
+            dialog.SelectedPath = App.Settings.settings.mhw_path;
             if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                 App.Settings.settings.mhw_path = dialog.SelectedPath;
         }
 
         private void cancelBTN_Click(object sender, RoutedEventArgs e)
         {
+            App.Settings.GenConfig();
+            App.ReloadTheme();
             Close();
         }
 
@@ -126,7 +146,8 @@ namespace MhwModManager
             else
                 darkmodeCB.Content = "Disabled";
 
-            /* WIP */
+            App.ReloadTheme();
+            MakeDarkTheme();
         }
 
         private void InitializeSettings()
@@ -138,6 +159,7 @@ namespace MhwModManager
         private void validateBTN_Click(object sender, RoutedEventArgs e)
         {
             App.Settings.ParseSettingsJSON();
+            App.ReloadTheme();
             Close();
         }
     }

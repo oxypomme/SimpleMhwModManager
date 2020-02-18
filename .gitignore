@@ -353,3 +353,4 @@ MigrationBackup/
 .ionide/
 /dependencies
 /setup.iss
+*.cmd

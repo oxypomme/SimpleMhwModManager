@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MhwModManager
 {
@@ -13,28 +14,22 @@ namespace MhwModManager
         private int index;
         private int? order;
 
-        public EditWindow(string path)
+        public EditWindow((ModInfo, string) modInfo)
         {
             InitializeComponent();
-            modPath = path;
-            int i = 0;
-            foreach (var mod in App.Mods)
-            {
-                if (mod.Item2 == path)
-                {
-                    index = i;
 
-                    nameTB.Text = mod.Item1.name;
-                    nameTB.TextChanged += nameTB_TextChanged;
+            MakeDarkTheme();
 
-                    order = mod.Item1.order + 1;
-                    orderTB.Text = order.ToString();
-                    orderTB.TextChanged += orderTB_TextChanged;
+            modPath = modInfo.Item2;
 
-                    break;
-                }
-                i++;
-            }
+            index = App.Mods.IndexOf(modInfo);
+
+            nameTB.Text = modInfo.Item1.name;
+            nameTB.TextChanged += nameTB_TextChanged;
+
+            order = modInfo.Item1.order + 1;
+            orderTB.Text = order.ToString();
+            orderTB.TextChanged += orderTB_TextChanged;
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
@@ -43,7 +38,7 @@ namespace MhwModManager
             {
                 foreach (var mod in App.Mods)
                 {
-                    if (mod.Item1.order == order.Value)
+                    if (mod.Item1.order == order.Value - 1)
                     {
                         // If the new order is already given, exchange them
                         mod.Item1.order = App.Mods[index].Item1.order;
@@ -51,12 +46,21 @@ namespace MhwModManager
                         break;
                     }
                 }
-                App.Mods[index].Item1.order = order.Value;
+                App.Mods[index].Item1.order = order.Value - 1;
                 App.Mods[index].Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, modPath));
                 Close();
             }
             else
                 MessageBox.Show("The order must be a number !", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void MakeDarkTheme()
+        {
+            var converter = new BrushConverter();
+            if (App.Settings.settings.dark_mode)
+                Background = (Brush)converter.ConvertFromString("#FF171717");
+            else
+                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
         }
 
         private void cancelBTN_Click(object sender, RoutedEventArgs e)
