@@ -2,6 +2,8 @@
 using WinForms = System.Windows.Forms;
 using System.Windows.Media;
 using System.Linq;
+using System.IO;
+using System;
 
 namespace MhwModManager
 {

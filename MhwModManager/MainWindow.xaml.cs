@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WinForms = System.Windows.Forms;
 using System.IO.Compression;
-using SevenZipExtractor;
+
 using System.Windows.Input;
 
 namespace MhwModManager
@@ -110,7 +110,7 @@ namespace MhwModManager
                     {
                         Tag = mod.Item1.order,
                         Content = mod.Item1.name,
-                        Margin = new Thickness(5)
+                        MinWidth = 80
                     };
                     modItem.IsChecked = mod.Item1.activated;
                     modItem.Checked += itemChecked;
@@ -318,12 +318,12 @@ namespace MhwModManager
         {
             if (e.Data.GetDataPresent("UIElement"))
             {
-                Console.WriteLine(e.Source);
                 if (e.Source == modListBox)
                 {
                     _isDown = false;
                     _isDragging = false;
                     _realDragSource.ReleaseMouseCapture();
+                    return;
                 }
                 UIElement droptarget = e.Source as UIElement;
                 int droptargetIndex = -1, i = 0;
@@ -374,8 +374,11 @@ namespace MhwModManager
         private void modListBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _isDown = false;
-            _isDragging = false;
-            _realDragSource?.ReleaseMouseCapture();
+            if (_isDragging)
+            {
+                _isDragging = false;
+                _realDragSource.ReleaseMouseCapture();
+            }
         }
 
         private void modListBox_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -455,74 +458,6 @@ namespace MhwModManager
                 App.logStream.WriteLine($"MHW Started");
             }
             catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
-        }
-
-        private void UpdateModsList()
-        {
-            try
-            {
-                modListBox.Items.Clear();
-                App.GetMods();
-
-                foreach (var mod in App.Mods)
-                {
-                    var modItem = new CheckBox
-                    {
-                        Tag = mod.Item1.order,
-                        Content = mod.Item1.name
-                    };
-                    modItem.IsChecked = mod.Item1.activated;
-                    modItem.Checked += itemChecked;
-                    modItem.Unchecked += itemChecked;
-                    // Adding the context menu
-                    var style = Application.Current.FindResource("CheckBoxListItem") as Style;
-                    modItem.Style = style;
-                    foreach (MenuItem item in modItem.ContextMenu.Items)
-                    {
-                        if (item.Tag.ToString() == "rem")
-                        {
-                            item.Click -= remModContext_Click;
-                            item.Click += remModContext_Click;
-                        }
-                        else if (item.Tag.ToString() == "edit")
-                        {
-                            item.Click -= editModContext_Click;
-                            item.Click += editModContext_Click;
-                        }
-                    }
-
-                    modListBox.Items.Add(modItem);
-                }
-
-                // Verify if the list is correct
-                for (int i = 0; i < modListBox.Items.Count; i++)
-                {
-                    if (((modListBox.Items[i] as CheckBox).Tag as int?) != i)
-                    {
-                        var item = modListBox.Items[i] as CheckBox;
-
-                        modListBox.Items.Remove(item);
-                        modListBox.Items.Insert((item.Tag as int?).Value, item);
-
-                        var mod = App.Mods[i];
-                        App.Mods.Remove(mod);
-                        App.Mods.Insert((item.Tag as int?).Value, mod);
-                    }
-                }
-
-                // Check if there's mods conflicts
-                for (int i = 0; i < App.Mods.Count() - 1; i++)
-                    if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].Item2), Path.Combine(App.ModsPath, App.Mods[i + 1].Item2)))
-                    {
-                        var firstModItem = modListBox.Items[App.Mods[i].Item1.order];
-                        var secondModItem = modListBox.Items[App.Mods[i + 1].Item1.order];
-                        (firstModItem as CheckBox).Foreground = Brushes.Red;
-                        (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].Item1.name;
-                        (secondModItem as CheckBox).Foreground = Brushes.Red;
-                        (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
-                    }
-            }
-            catch (Exception e) { App.logStream.WriteLine(e.ToString(), "FATAL"); }
         }
 
         private void webMod_Click(object sender, RoutedEventArgs e)
