@@ -14,31 +14,22 @@ namespace MhwModManager
         private int index;
         private int? order;
 
-        public EditWindow(string path)
+        public EditWindow((ModInfo, string) modInfo)
         {
             InitializeComponent();
 
             MakeDarkTheme();
 
-            modPath = path;
-            int i = 0;
-            foreach (var mod in App.Mods)
-            {
-                if (mod.Item2 == path)
-                {
-                    index = i;
+            modPath = modInfo.Item2;
 
-                    nameTB.Text = mod.Item1.name;
-                    nameTB.TextChanged += nameTB_TextChanged;
+            index = App.Mods.IndexOf(modInfo);
 
-                    order = mod.Item1.order + 1;
-                    orderTB.Text = order.ToString();
-                    orderTB.TextChanged += orderTB_TextChanged;
+            nameTB.Text = modInfo.Item1.name;
+            nameTB.TextChanged += nameTB_TextChanged;
 
-                    break;
-                }
-                i++;
-            }
+            order = modInfo.Item1.order + 1;
+            orderTB.Text = order.ToString();
+            orderTB.TextChanged += orderTB_TextChanged;
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
@@ -47,7 +38,7 @@ namespace MhwModManager
             {
                 foreach (var mod in App.Mods)
                 {
-                    if (mod.Item1.order == order.Value)
+                    if (mod.Item1.order == order.Value - 1)
                     {
                         // If the new order is already given, exchange them
                         mod.Item1.order = App.Mods[index].Item1.order;
@@ -55,7 +46,7 @@ namespace MhwModManager
                         break;
                     }
                 }
-                App.Mods[index].Item1.order = order.Value;
+                App.Mods[index].Item1.order = order.Value - 1;
                 App.Mods[index].Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, modPath));
                 Close();
             }
