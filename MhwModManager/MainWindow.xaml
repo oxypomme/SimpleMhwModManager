@@ -43,7 +43,6 @@
             </Button>
         </Grid>
         <ListBox Name="modListBox" Margin="3" Grid.Row="1">
-            <CheckBox Content="Dummy Mod" FontStyle="Italic" Style="{StaticResource CheckBoxListItem}" />
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="addModContext" Click="addMod_Click">
