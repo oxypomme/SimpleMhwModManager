@@ -9,6 +9,7 @@ using System.IO;
 using WinForms = System.Windows.Forms;
 using System.IO.Compression;
 using SevenZipExtractor;
+using System.Windows.Input;
 
 namespace MhwModManager
 {
@@ -18,6 +19,11 @@ namespace MhwModManager
     public partial class MainWindow : Window
     {
         public static MainWindow Instance;
+        private UIElement _dummyDragSource = new UIElement();
+        private bool _isDown;
+        private bool _isDragging;
+        private UIElement _realDragSource;
+        private Point _startPoint;
         private bool isDarkTheme = false;
 
         public MainWindow()
@@ -102,7 +108,8 @@ namespace MhwModManager
                     var modItem = new CheckBox
                     {
                         Tag = mod.Item1.order,
-                        Content = mod.Item1.name
+                        Content = mod.Item1.name,
+                        Margin = new Thickness(5)
                     };
                     modItem.IsChecked = mod.Item1.activated;
                     modItem.Checked += itemChecked;
@@ -298,12 +305,90 @@ namespace MhwModManager
             catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
         }
 
+        private void modListBox_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("UIElement"))
+            {
+                e.Effects = DragDropEffects.Move;
+            }
+        }
+
         private void modListBox_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data.GetDataPresent("UIElement"))
+            {
+                Console.WriteLine(e.Source);
+                if (e.Source == modListBox)
+                {
+                    _isDown = false;
+                    _isDragging = false;
+                    _realDragSource.ReleaseMouseCapture();
+                }
+                UIElement droptarget = e.Source as UIElement;
+                int droptargetIndex = -1, i = 0;
+                foreach (UIElement element in modListBox.Items)
+                {
+                    if (element.Equals(droptarget))
+                    {
+                        droptargetIndex = i;
+                        break;
+                    }
+                    i++;
+                }
+                if (droptargetIndex != -1)
+                {
+                    modListBox.Items.Remove(_realDragSource);
+                    modListBox.Items.Insert(droptargetIndex, _realDragSource);
+                    int index = 0;
+                    foreach (CheckBox checkbox in modListBox.Items)
+                    {
+                        checkbox.Tag = index;
+                        var couple = App.Mods.Find((mod) => mod.Item1.name == checkbox.Content.ToString());
+                        couple.Item1.order = index;
+                        couple.Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, couple.Item2));
+                        index++;
+                    }
+                }
+
+                _isDown = false;
+                _isDragging = false;
+                _realDragSource.ReleaseMouseCapture();
+            }
+            else if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 App.AddMods(files);
+            }
+        }
+
+        private void modListBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source != modListBox)
+            {
+                _isDown = true;
+                _startPoint = e.GetPosition(modListBox);
+            }
+        }
+
+        private void modListBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isDown = false;
+            _isDragging = false;
+            _realDragSource?.ReleaseMouseCapture();
+        }
+
+        private void modListBox_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isDown)
+            {
+                if ((_isDragging == false) && ((Math.Abs(e.GetPosition(modListBox).X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance) ||
+                    (Math.Abs(e.GetPosition(modListBox).Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)))
+                {
+                    _isDragging = true;
+                    _realDragSource = e.Source as UIElement;
+                    _realDragSource.CaptureMouse();
+                    DragDrop.DoDragDrop(_dummyDragSource, new DataObject("UIElement", e.Source, true), DragDropEffects.Move);
+                }
             }
         }
 

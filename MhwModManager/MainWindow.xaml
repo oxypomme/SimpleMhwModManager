@@ -42,7 +42,11 @@
                 <Image Source="icons/launch.png" />
             </Button>
         </Grid>
-        <ListBox Name="modListBox" Margin="3" Grid.Row="1" Drop="modListBox_Drop" AllowDrop="True">
+        <ListBox Name="modListBox" Margin="3" Grid.Row="1" Drop="modListBox_Drop" AllowDrop="True"
+                 PreviewMouseLeftButtonDown="modListBox_PreviewMouseLeftButtonDown"
+                 PreviewMouseLeftButtonUp="modListBox_PreviewMouseLeftButtonUp"
+                 PreviewMouseMove="modListBox_PreviewMouseMove"
+                 DragEnter="modListBox_DragEnter">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="addModContext" Click="addMod_Click">
