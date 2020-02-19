@@ -38,7 +38,7 @@ namespace MhwModManager
 
                 if (!Directory.Exists(Settings.settings.mhw_path))
                 {
-                    try { throw new FileNotFoundException(); } catch (FileNotFoundException e) { logStream.WriteLine(e.Message, "CRITICAL"); }
+                    try { throw new FileNotFoundException(); } catch (FileNotFoundException e) { logStream.WriteLine(e.ToString(), "CRITICAL"); }
 
                     MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                     var dialog = new WinForms.FolderBrowserDialog();
@@ -57,7 +57,7 @@ namespace MhwModManager
 
                 Updater();
             }
-            catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
+            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
         }
 
         public static void ReloadTheme()
@@ -86,7 +86,7 @@ namespace MhwModManager
                 (Current.MainWindow as MainWindow).MakeDarkTheme();
                 Current.MainWindow.UpdateLayout();
             }
-            catch (Exception e) { logStream.WriteLine(e.Message, "ERROR"); }
+            catch (Exception e) { logStream.WriteLine(e.ToString(), "ERROR"); }
         }
 
         public static void GetMods()
@@ -125,7 +125,7 @@ namespace MhwModManager
                 }
                 logStream.WriteLine("Modlist updated !");
             }
-            catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
+            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
         }
 
         public async static void Updater()
@@ -144,7 +144,7 @@ namespace MhwModManager
                         System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
                 }
             }
-            catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
+            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
         }
     }
 
@@ -214,7 +214,7 @@ namespace MhwModManager
                     App.logStream.WriteLine($"Mod {name} info found");
                 }
             }
-            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
+            catch (Exception e) { App.logStream.WriteLine(e.ToString(), "FATAL"); }
         }
 
         public void ParseSettingsJSON(string path)
@@ -228,7 +228,7 @@ namespace MhwModManager
                     file.Close();
                 }
             }
-            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
+            catch (Exception e) { App.logStream.WriteLine(e.ToString(), "FATAL"); }
         }
     }
 }
