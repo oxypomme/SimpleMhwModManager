@@ -8,8 +8,8 @@ namespace MhwModManager
     public class ModInfo
     {
         public bool activated { get; set; }
-        public int order { get; set; }
         public string name { get; set; }
+        public int order { get; set; }
 
         public void GenInfo(string path, int? index = null)
         {
@@ -23,11 +23,12 @@ namespace MhwModManager
                     else
                         order = App.Mods.Count();
 
-                    // Get the name of the extracted folder (without the .zip at the end), not the full path
+                    // Get the name of the extracted folder (without the .zip at the end), not the
+                    // full path
                     var foldName = path.Split('\\');
                     name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
 
-                    App.logStream.WriteLine($"Mod {name} info not found");
+                    App.logStream.Warning($"Mod {name} info not found");
 
                     ParseSettingsJSON(path);
                 }
@@ -44,24 +45,24 @@ namespace MhwModManager
                     order = sets.order;
                     name = sets.name;
 
-                    App.logStream.WriteLine($"Mod {name} info found");
+                    App.logStream.Log($"Mod {name} info found");
                 }
             }
-            catch (Exception e) { App.logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { App.logStream.Error(e.ToString()); }
         }
 
         public void ParseSettingsJSON(string path)
         {
             try
             {
-                App.logStream.WriteLine("Mod info updated");
+                App.logStream.Log("Mod info updated");
                 using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
                 {
                     file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
                     file.Close();
                 }
             }
-            catch (Exception e) { App.logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { App.logStream.Error(e.ToString()); }
         }
     }
 }

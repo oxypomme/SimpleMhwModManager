@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
+using Newtonsoft.Json;
+using SevenZipExtractor;
 
 namespace MhwModManager
 {
@@ -36,26 +38,89 @@ namespace MhwModManager
 
                 if (!Directory.Exists(Settings.settings.mhw_path))
                 {
-                    try { throw new FileNotFoundException(); } catch (FileNotFoundException e) { logStream.WriteLine(e.ToString(), "CRITICAL"); }
+                    logStream.Error(new FileNotFoundException().ToString());
 
                     MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                     var dialog = new WinForms.FolderBrowserDialog();
                     if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                     {
-                        logStream.WriteLine("MHW path set");
+                        logStream.Log("MHW path set");
                         Settings.settings.mhw_path = dialog.SelectedPath;
                         Settings.ParseSettingsJSON();
                     }
                     else
                     {
-                        logStream.WriteLine("MHW path not set", "FATAL");
+                        logStream.Error("MHW path not set");
                         Environment.Exit(0);
                     }
                 }
 
                 Updater();
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
+        }
+
+        public static void AddMods(params string[] paths)
+        {
+            try
+            {
+                if (paths == null || paths.Length == 0)
+                {
+                    var dialog = new WinForms.OpenFileDialog();
+                    // Dialog to select a mod archive
+                    dialog.DefaultExt = "zip";
+                    dialog.Filter = "Mod Archives (*.zip, *.rar, *.7z)|*.zip;*.rar;*.7z|all files|*";
+                    dialog.Multiselect = true;
+                    if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                        paths = dialog.FileNames;
+                    else
+                        return;
+                }
+                var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
+
+                if (!Directory.Exists(tmpFolder))
+                    Directory.CreateDirectory(tmpFolder);
+
+                foreach (var file in paths)
+                {
+                    // Separate the path and unzip mod
+                    var splittedPath = file.Split('\\');
+                    using (ArchiveFile archiveFile = new ArchiveFile(file))
+                        archiveFile.Extract(tmpFolder);
+
+                    // Get the name of the extracted folder (without the .zip at the end), not the
+                    // full path
+                    if (!InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]))
+                        // If the install fail
+                        MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Directory.Delete(tmpFolder, true);
+
+                    GetMods(); // Refresh the modlist
+                }
+                MhwModManager.MainWindow.Instance.UpdateModsList();
+            }
+            catch (Exception ex) { logStream.Error(ex.Message); }
+        }
+
+        public static bool InstallMod(string path, string name)
+        {
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
+                        // If the mod isn't installed
+                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
+                    else
+                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
+                else
+                {
+                    InstallMod(dir, name);
+                }
+            }
+            return false;
         }
 
         public static void ReloadTheme()
@@ -84,14 +149,14 @@ namespace MhwModManager
                 (Current.MainWindow as MainWindow).MakeDarkTheme();
                 Current.MainWindow.UpdateLayout();
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "ERROR"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
 
         public static void GetMods()
         {
             try
             {
-                logStream.WriteLine("Updating modlist...");
+                logStream.Log("Updating modlist...");
                 // This list contain the ModInfos and the folder name of each mod
                 Mods = new List<(ModInfo, string)>();
 
@@ -100,30 +165,16 @@ namespace MhwModManager
 
                 var modFolder = new DirectoryInfo(ModsPath);
 
-                int i = 0;
                 foreach (var mod in modFolder.GetDirectories())
                 {
                     var info = new ModInfo();
                     info.GenInfo(mod.FullName);
-                    // If the order change the generation of the list
-                    if (info.order >= Mods.Count)
-                        Mods.Add((info, mod.Name));
-                    else
-                    {
-                        if (i > 0)
-                            if (info.order == Mods[i - 1].Item1.order)
-                            {
-                                info.order++;
-                                info.ParseSettingsJSON(mod.FullName);
-                            }
-                        Mods.Insert(info.order, (info, mod.Name));
-                        logStream.WriteLine($"Mod added : {info.name}");
-                    }
-                    i++;
+                    Mods.Add((info, mod.Name));
                 }
-                logStream.WriteLine("Modlist updated !");
+                Mods.Sort((left, right) => left.Item1.order.CompareTo(right.Item1.order));
+                logStream.Log("Modlist updated !");
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
 
         public async static void Updater()
@@ -134,7 +185,7 @@ namespace MhwModManager
                 var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("SimpleMhwModManager"));
                 var lastRelease = await github.Repository.Release.GetLatest(234864718);
                 var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                logStream.WriteLine($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
+                logStream.Log($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
                 if (new Version(lastRelease.TagName) > current)
                 {
                     var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
@@ -142,7 +193,7 @@ namespace MhwModManager
                         System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
                 }
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
     }
 }
