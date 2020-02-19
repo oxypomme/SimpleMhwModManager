@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
-using Newtonsoft.Json;
 using SevenZipExtractor;
 
 namespace MhwModManager

@@ -104,7 +104,7 @@ namespace MhwModManager
                 {
                     var modItem = new CheckBox
                     {
-                        Tag = mod.Item1.order,
+                        Tag = mod,
                         Content = mod.Item1.name,
                         Width = 300
                     };
@@ -254,7 +254,7 @@ namespace MhwModManager
             return true; // return true if everything's fine
         }
 
-        private void editMod((ModInfo, string) modInfo)
+        private void editMod((ModInfo, string)? modInfo)
         {
             var editWindow = new EditWindow(modInfo);
             editWindow.Owner = Application.Current.MainWindow;
@@ -267,7 +267,7 @@ namespace MhwModManager
             try
             {
                 var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-                editMod(App.Mods[(caller.Tag as int?).Value]);
+                editMod(caller.Tag as (ModInfo, string)?);
             }
             catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
@@ -277,27 +277,27 @@ namespace MhwModManager
             try
             {
                 // Get the full path of the mod
-                var index = int.Parse((sender as CheckBox).Tag.ToString());
-                var mod = Path.Combine(App.ModsPath, App.Mods[index].Item2);
+                var mod = ((sender as CheckBox).Tag as (ModInfo, string)?).Value;
+                var modPath = Path.Combine(App.ModsPath, mod.Item2);
 
                 if ((sender as CheckBox).IsChecked.Value == true)
                 {
                     // Install the mod
-                    DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
-                    App.logStream.Log($"{App.Mods[index].Item1.name} installed");
+                    DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
+                    App.logStream.Log($"{mod.Item1.name} installed");
                 }
                 else
                 {
                     // Desinstall the mod
-                    DeleteMod(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                    DeleteMod(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                     CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                    App.logStream.Log($"{App.Mods[index].Item1.name} unistalled");
+                    App.logStream.Log($"{mod.Item1.name} unistalled");
                 }
 
-                var info = App.Mods[index].Item1;
-                info.GenInfo(mod);
+                var info = mod.Item1;
+                info.GenInfo(modPath);
                 info.activated = (sender as CheckBox).IsChecked.Value;
-                info.ParseSettingsJSON(mod);
+                info.ParseSettingsJSON(modPath);
             }
             catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
@@ -403,14 +403,14 @@ namespace MhwModManager
         {
             try
             {
-                foreach (var mod in modListBox.SelectedItems)
+                foreach (var cb in modListBox.SelectedItems)
                 {
-                    var caller = (mod as CheckBox);
-                    var index = int.Parse(caller.Tag.ToString());
-                    App.logStream.Log($"Mod {App.Mods[index].Item1.name} removed");
-                    Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
-                    App.Mods.RemoveAt(index);
-                    for (int i = index; i < App.Mods.Count(); i++)
+                    var caller = (cb as CheckBox);
+                    var mod = ((sender as CheckBox).Tag as (ModInfo, string)?).Value;
+                    App.logStream.Log($"Mod {mod.Item1.name} removed");
+                    Directory.Delete(Path.Combine(App.ModsPath, mod.Item2), true);
+                    App.Mods.Remove(mod);
+                    for (int i = mod.Item1.order; i < App.Mods.Count(); i++)
                         App.Mods[i].Item1.order = i;
                 }
                 UpdateModsList();
@@ -423,10 +423,10 @@ namespace MhwModManager
             try
             {
                 var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-                var index = int.Parse(caller.Tag.ToString());
-                Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
-                App.Mods.RemoveAt(index);
-                for (int i = index; i < App.Mods.Count(); i++)
+                var mod = ((caller as CheckBox).Tag as (ModInfo, string)?).Value;
+                Directory.Delete(Path.Combine(App.ModsPath, mod.Item2), true);
+                App.Mods.Remove(mod);
+                for (int i = mod.Item1.order; i < App.Mods.Count(); i++)
                 {
                     App.Mods[i].Item1.order = i;
                     App.Mods[i].Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, App.Mods[i].Item2));
