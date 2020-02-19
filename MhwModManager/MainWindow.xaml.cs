@@ -90,7 +90,7 @@ namespace MhwModManager
                     (startGame.Content as Image).Source = startIcon;
                 }
             }
-            catch (Exception e) { App.logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { App.logStream.Error(e.ToString()); }
         }
 
         public void UpdateModsList()
@@ -143,7 +143,7 @@ namespace MhwModManager
                         (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
                     }
             }
-            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
+            catch (Exception e) { App.logStream.Error(e.Message); }
         }
 
         private static void CleanFolder(string folder)
@@ -269,7 +269,7 @@ namespace MhwModManager
                 var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
                 editMod(App.Mods[(caller.Tag as int?).Value]);
             }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void itemChecked(object sender, RoutedEventArgs e)
@@ -284,14 +284,14 @@ namespace MhwModManager
                 {
                     // Install the mod
                     DirectoryCopy(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
-                    App.logStream.WriteLine($"{App.Mods[index].Item1.name} installed");
+                    App.logStream.Log($"{App.Mods[index].Item1.name} installed");
                 }
                 else
                 {
                     // Desinstall the mod
                     DeleteMod(mod, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                     CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                    App.logStream.WriteLine($"{App.Mods[index].Item1.name} unistalled");
+                    App.logStream.Log($"{App.Mods[index].Item1.name} unistalled");
                 }
 
                 var info = App.Mods[index].Item1;
@@ -299,7 +299,7 @@ namespace MhwModManager
                 info.activated = (sender as CheckBox).IsChecked.Value;
                 info.ParseSettingsJSON(mod);
             }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void modListBox_DragEnter(object sender, DragEventArgs e)
@@ -407,7 +407,7 @@ namespace MhwModManager
                 {
                     var caller = (mod as CheckBox);
                     var index = int.Parse(caller.Tag.ToString());
-                    App.logStream.WriteLine($"Mod {App.Mods[index].Item1.name} removed");
+                    App.logStream.Log($"Mod {App.Mods[index].Item1.name} removed");
                     Directory.Delete(Path.Combine(App.ModsPath, App.Mods[index].Item2), true);
                     App.Mods.RemoveAt(index);
                     for (int i = index; i < App.Mods.Count(); i++)
@@ -415,7 +415,7 @@ namespace MhwModManager
                 }
                 UpdateModsList();
             }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void remModContext_Click(object sender, RoutedEventArgs e)
@@ -434,7 +434,7 @@ namespace MhwModManager
 
                 UpdateModsList();
             }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void settingsMod_Click(object sender, RoutedEventArgs e)
@@ -445,7 +445,7 @@ namespace MhwModManager
                 settingsWindow.Owner = Application.Current.MainWindow;
                 settingsWindow.ShowDialog();
             }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void startGame_Click(object sender, RoutedEventArgs e)
@@ -453,15 +453,15 @@ namespace MhwModManager
             try
             {
                 Process.Start(Path.Combine(App.Settings.settings.mhw_path, "MonsterHunterWorld.exe"));
-                App.logStream.WriteLine($"MHW Started");
+                App.logStream.Log($"MHW Started");
             }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void webMod_Click(object sender, RoutedEventArgs e)
         {
             try { Process.Start("https://www.nexusmods.com/monsterhunterworld"); }
-            catch (Exception ex) { App.logStream.WriteLine(ex.ToString(), "FATAL"); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

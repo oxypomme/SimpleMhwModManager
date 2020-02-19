@@ -17,7 +17,7 @@ namespace MhwModManager
             var steamRoot = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", "InstallPath", null) as string;
             var libFolders = new List<string>();
             libFolders.Add(steamRoot);
-            App.logStream.WriteLine("Registry key found");
+            App.logStream.Log("Registry key found");
             // Read the steam library
             dynamic libraryfolders = Gameloop.Vdf.VdfConvert.Deserialize(File.ReadAllText(Path.Combine(steamRoot, "steamapps", "libraryfolders.vdf")));
             try
@@ -35,7 +35,7 @@ namespace MhwModManager
                             dynamic content = Gameloop.Vdf.VdfConvert.Deserialize(text.ReadToEnd());
                             if (content.Value.appid.ToString() == appid)
                             {
-                                App.logStream.WriteLine("MHW found");
+                                App.logStream.Log("MHW found");
                                 return Path.Combine(file.DirectoryName, "common", content.Value.installdir.ToString()); // The path of Monster Hunter World
                             }
                         }
@@ -46,10 +46,10 @@ namespace MhwModManager
         {
             if (!File.Exists(App.SettingsPath))
             {
-                App.logStream.WriteLine("Settings not found");
+                App.logStream.Warning("Settings not found");
                 if (!Directory.Exists(App.AppData))
                 {
-                    App.logStream.WriteLine("AppData created");
+                    App.logStream.Log("AppData created");
                     Directory.CreateDirectory(App.AppData);
                 }
 
@@ -59,7 +59,7 @@ namespace MhwModManager
             }
             else
             {
-                App.logStream.WriteLine("Settings found");
+                App.logStream.Log("Settings found");
                 Setting sets;
                 using (StreamReader file = new StreamReader(App.SettingsPath))
                 {
@@ -71,13 +71,13 @@ namespace MhwModManager
                 if (!Directory.Exists(sets.settings.mhw_path))
                     sets.settings.mhw_path = FindMHWInstallFolder();
                 settings.mhw_path = sets.settings.mhw_path;
-                App.logStream.WriteLine("Settings loaded");
+                App.logStream.Log("Settings loaded");
             }
         }
 
         public void ParseSettingsJSON()
         {
-            App.logStream.WriteLine("Settings updated");
+            App.logStream.Log("Settings updated");
             using (StreamWriter file = new StreamWriter(App.SettingsPath))
             {
                 file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));

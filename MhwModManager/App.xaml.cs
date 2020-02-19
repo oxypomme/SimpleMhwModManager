@@ -38,26 +38,26 @@ namespace MhwModManager
 
                 if (!Directory.Exists(Settings.settings.mhw_path))
                 {
-                    try { throw new FileNotFoundException(); } catch (FileNotFoundException e) { logStream.WriteLine(e.ToString(), "CRITICAL"); }
+                    logStream.Error(new FileNotFoundException().ToString());
 
                     MessageBox.Show("The path to MHW is not found, you have to install the game first, or if the game is already installed, open it", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                     var dialog = new WinForms.FolderBrowserDialog();
                     if (dialog.ShowDialog() == WinForms.DialogResult.OK)
                     {
-                        logStream.WriteLine("MHW path set");
+                        logStream.Log("MHW path set");
                         Settings.settings.mhw_path = dialog.SelectedPath;
                         Settings.ParseSettingsJSON();
                     }
                     else
                     {
-                        logStream.WriteLine("MHW path not set", "FATAL");
+                        logStream.Error("MHW path not set");
                         Environment.Exit(0);
                     }
                 }
 
                 Updater();
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
 
         public static void AddMods(params string[] paths)
@@ -99,7 +99,7 @@ namespace MhwModManager
                 }
                 MhwModManager.MainWindow.Instance.UpdateModsList();
             }
-            catch (Exception ex) { logStream.WriteLine(ex.Message, "FATAL"); }
+            catch (Exception ex) { logStream.Error(ex.Message); }
         }
 
         public static bool InstallMod(string path, string name)
@@ -149,14 +149,14 @@ namespace MhwModManager
                 (Current.MainWindow as MainWindow).MakeDarkTheme();
                 Current.MainWindow.UpdateLayout();
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "ERROR"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
 
         public static void GetMods()
         {
             try
             {
-                logStream.WriteLine("Updating modlist...");
+                logStream.Log("Updating modlist...");
                 // This list contain the ModInfos and the folder name of each mod
                 Mods = new List<(ModInfo, string)>();
 
@@ -172,9 +172,9 @@ namespace MhwModManager
                     Mods.Add((info, mod.Name));
                 }
                 Mods.Sort((left, right) => left.Item1.order.CompareTo(right.Item1.order));
-                logStream.WriteLine("Modlist updated !");
+                logStream.Log("Modlist updated !");
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
 
         public async static void Updater()
@@ -185,7 +185,7 @@ namespace MhwModManager
                 var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("SimpleMhwModManager"));
                 var lastRelease = await github.Repository.Release.GetLatest(234864718);
                 var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                logStream.WriteLine($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
+                logStream.Log($"Versions : Current = {current}, Latest = {lastRelease.TagName}");
                 if (new Version(lastRelease.TagName) > current)
                 {
                     var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
@@ -193,7 +193,7 @@ namespace MhwModManager
                         System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
                 }
             }
-            catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
+            catch (Exception e) { logStream.Error(e.ToString()); }
         }
     }
 }
