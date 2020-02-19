@@ -30,6 +30,7 @@
                 </WrapPanel>
             </WrapPanel>
             <Separator Height="5" Margin="0,10" />
+            <Button Name="resetBtn" Content="/!\ Reset mods data /!\" Padding="2" HorizontalAlignment="Right" Margin="10" Style="{StaticResource CancelButton}" Click="resetBtn_Click" />
             <WrapPanel HorizontalAlignment="Right">
                 <Button Name="validateBTN" Content="Validate" Click="validateBTN_Click" Width="55" Padding="5" Margin="5" Style="{StaticResource ValidateButton}" />
                 <Button Name="cancelBTN" Content="Cancel" Click="cancelBTN_Click" Width="55" Padding="5" Margin="5" Style="{StaticResource CancelButton}" />

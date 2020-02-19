@@ -6,6 +6,7 @@ using System.Windows;
 using WinForms = System.Windows.Forms;
 using System;
 using System.Windows.Media;
+using System.Linq;
 
 namespace MhwModManager
 {
@@ -108,21 +109,6 @@ namespace MhwModManager
             versionLbl.Content = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         }
 
-        private void MakeDarkTheme()
-        {
-            var converter = new BrushConverter();
-            if (App.Settings.settings.dark_mode)
-            {
-                Background = (Brush)converter.ConvertFromString("#FF171717");
-                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FFFFFFFF");
-            }
-            else
-            {
-                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
-                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FF171717");
-            }
-        }
-
         private void browseBTN_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new WinForms.FolderBrowserDialog();
@@ -154,6 +140,33 @@ namespace MhwModManager
         {
             pathTB.Text = App.Settings.settings.mhw_path;
             darkmodeCB.IsChecked = App.Settings.settings.dark_mode;
+        }
+
+        private void MakeDarkTheme()
+        {
+            var converter = new BrushConverter();
+            if (App.Settings.settings.dark_mode)
+            {
+                Background = (Brush)converter.ConvertFromString("#FF171717");
+                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FFFFFFFF");
+            }
+            else
+            {
+                Background = (Brush)converter.ConvertFromString("#FFFFFFFF");
+                (browseBTN.Content as System.Windows.Controls.Border).BorderBrush = (Brush)converter.ConvertFromString("#FF171717");
+            }
+        }
+
+        private void resetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Warning ! Clicking Yes will delete every mod informations stored for the software. It will NOT remove installed mods. Are you sure you want to continue ?", "Reset data", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel) == MessageBoxResult.Yes)
+            {
+                Directory.Delete(App.ModsPath, true);
+                Close();
+                Application.Current.MainWindow.Close();
+                System.Diagnostics.Process.Start(Environment.GetCommandLineArgs().First());
+                Environment.Exit(0);
+            }
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
