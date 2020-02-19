@@ -26,12 +26,17 @@ namespace MhwModManager
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
         public static List<(ModInfo, string)> Mods;
-        public static LogStream logStream = new LogStream(Path.Combine(AppData, "last.log"));
+        public static LogStream logStream;
 
         public App()
         {
             try
             {
+                if (!Directory.Exists(AppData))
+                    Directory.CreateDirectory(AppData);
+
+                logStream = new LogStream(Path.Combine(AppData, "last.log"));
+
                 Settings.GenConfig();
 
                 ReloadTheme();

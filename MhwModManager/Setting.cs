@@ -47,11 +47,6 @@ namespace MhwModManager
             if (!File.Exists(App.SettingsPath))
             {
                 App.logStream.Warning("Settings not found");
-                if (!Directory.Exists(App.AppData))
-                {
-                    App.logStream.Log("AppData created");
-                    Directory.CreateDirectory(App.AppData);
-                }
 
                 settings.dark_mode = false;
                 settings.mhw_path = FindMHWInstallFolder();

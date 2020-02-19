@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3088F5B4-9978-437C-88DE-E892614083A6}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>MhwModManager</RootNamespace>
     <AssemblyName>MhwModManager</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
