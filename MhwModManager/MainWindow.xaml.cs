@@ -176,7 +176,7 @@ namespace MhwModManager
                     {
                         // Separate the path and unzip mod
                         var splittedPath = file.Split('\\');
-                        using (ArchiveFile archiveFile = new ArchiveFile(file))
+                        using (ArchiveFile archiveFile = new ArchiveFile(file, "x86\\7z.dll"))
                             archiveFile.Extract(tmpFolder);
 
                         // Get the name of the extracted folder (without the .zip at the end), not
