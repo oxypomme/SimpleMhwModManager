@@ -102,15 +102,11 @@ namespace MhwModManager
 
                 foreach (var mod in App.Mods)
                 {
-                    // Increase the order count if didn't exist
-                    if (mod.Item1.order >= App.Mods.Count())
-                        mod.Item1.order = App.Mods.Count() - 1;
-
                     var modItem = new CheckBox
                     {
                         Tag = mod.Item1.order,
                         Content = mod.Item1.name,
-                        MinWidth = 80
+                        Width = 300
                     };
                     modItem.IsChecked = mod.Item1.activated;
                     modItem.Checked += itemChecked;
@@ -340,15 +336,17 @@ namespace MhwModManager
                 {
                     modListBox.Items.Remove(_realDragSource);
                     modListBox.Items.Insert(droptargetIndex, _realDragSource);
+                    var toMove = App.Mods.FindIndex(mod => mod.Item1.name == ((CheckBox)_realDragSource).Content.ToString());
+                    var buffer = App.Mods[toMove];
+                    App.Mods.RemoveAt(toMove);
+                    App.Mods.Insert(droptargetIndex, buffer);
                     int index = 0;
-                    foreach (CheckBox checkbox in modListBox.Items)
+                    foreach (var mod in App.Mods)
                     {
-                        checkbox.Tag = index;
-                        var couple = App.Mods.Find((mod) => mod.Item1.name == checkbox.Content.ToString());
-                        couple.Item1.order = index;
-                        couple.Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, couple.Item2));
-                        index++;
+                        mod.Item1.order = index++;
+                        mod.Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, mod.Item2));
                     }
+                    UpdateModsList();
                 }
 
                 _isDown = false;

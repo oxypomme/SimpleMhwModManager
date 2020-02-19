@@ -165,27 +165,13 @@ namespace MhwModManager
 
                 var modFolder = new DirectoryInfo(ModsPath);
 
-                int i = 0;
                 foreach (var mod in modFolder.GetDirectories())
                 {
                     var info = new ModInfo();
                     info.GenInfo(mod.FullName);
-                    // If the order change the generation of the list
-                    if (info.order >= Mods.Count)
-                        Mods.Add((info, mod.Name));
-                    else
-                    {
-                        if (i > 0)
-                            if (info.order == Mods[i - 1].Item1.order)
-                            {
-                                info.order++;
-                                info.ParseSettingsJSON(mod.FullName);
-                            }
-                        Mods.Insert(info.order, (info, mod.Name));
-                        logStream.WriteLine($"Mod added : {info.name}");
-                    }
-                    i++;
+                    Mods.Add((info, mod.Name));
                 }
+                Mods.Sort((left, right) => left.Item1.order.CompareTo(right.Item1.order));
                 logStream.WriteLine("Modlist updated !");
             }
             catch (Exception e) { logStream.WriteLine(e.ToString(), "FATAL"); }
