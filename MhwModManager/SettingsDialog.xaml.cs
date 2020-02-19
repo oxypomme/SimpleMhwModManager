@@ -28,7 +28,7 @@ namespace MhwModManager
                 for (int i = 1; ; i++)
                     libFolders.Add(libraryfolders.Value[i.ToString()].ToString());
             }
-            catch (Exception e) { }
+            catch (Exception) { }
             const string appid = "582010"; // The appid of Monster Hunter World
             foreach (var folder in libFolders)
                 foreach (var file in new DirectoryInfo(Path.Combine(folder, "steamapps")).GetFiles())
