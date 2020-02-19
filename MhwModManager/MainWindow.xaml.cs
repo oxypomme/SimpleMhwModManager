@@ -416,9 +416,11 @@ namespace MhwModManager
                     {
                         var firstModItem = modListBox.Items[App.Mods[i].Item1.order];
                         var secondModItem = modListBox.Items[App.Mods[i + 1].Item1.order];
-                        (firstModItem as CheckBox).Foreground = Brushes.Red;
+                        //(firstModItem as CheckBox).Foreground = Brushes.Red;
+                        (firstModItem as CheckBox).FontStyle = FontStyles.Italic;
                         (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].Item1.name;
-                        (secondModItem as CheckBox).Foreground = Brushes.Red;
+                        //(secondModItem as CheckBox).Foreground = Brushes.Red;
+                        (secondModItem as CheckBox).FontStyle = FontStyles.Italic;
                         (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
                     }
             }
