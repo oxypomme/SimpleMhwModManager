@@ -42,7 +42,7 @@
                 <Image Source="icons/launch.png" />
             </Button>
         </Grid>
-        <ListBox Name="modListBox" Margin="3" Grid.Row="1">
+        <ListBox Name="modListBox" Margin="3" Grid.Row="1" Drop="modListBox_Drop" AllowDrop="True">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="addModContext" Click="addMod_Click">

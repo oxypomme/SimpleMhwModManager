@@ -17,10 +17,12 @@ namespace MhwModManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance;
         private bool isDarkTheme = false;
 
         public MainWindow()
         {
+            Instance = this;
             InitializeComponent();
 
             UpdateModsList();
@@ -80,6 +82,62 @@ namespace MhwModManager
                     startIcon.EndInit();
                     (startGame.Content as Image).Source = startIcon;
                 }
+            }
+            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
+        }
+
+        public void UpdateModsList()
+        {
+            try
+            {
+                modListBox.Items.Clear();
+                App.GetMods();
+
+                foreach (var mod in App.Mods)
+                {
+                    // Increase the order count if didn't exist
+                    if (mod.Item1.order >= App.Mods.Count())
+                        mod.Item1.order = App.Mods.Count() - 1;
+
+                    var modItem = new CheckBox
+                    {
+                        Tag = mod.Item1.order,
+                        Content = mod.Item1.name
+                    };
+                    modItem.IsChecked = mod.Item1.activated;
+                    modItem.Checked += itemChecked;
+                    modItem.Unchecked += itemChecked;
+                    // Adding the context menu
+                    var style = Application.Current.FindResource("CheckBoxListItem") as Style;
+                    modItem.Style = style;
+                    foreach (MenuItem item in modItem.ContextMenu.Items)
+                    {
+                        if (item.Tag.ToString() == "rem")
+                        {
+                            item.Click -= remModContext_Click;
+                            item.Click += remModContext_Click;
+                        }
+                        else if (item.Tag.ToString() == "edit")
+                        {
+                            item.Click -= editModContext_Click;
+                            item.Click += editModContext_Click;
+                        }
+                    }
+
+                    modListBox.Items.Add(modItem);
+                }
+
+                // Check if there's mods conflicts
+                for (int i = 0; i < App.Mods.Count() - 1; i++)
+                    if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].Item2), Path.Combine(App.ModsPath, App.Mods[i + 1].Item2)))
+                    {
+                        var firstModItem = modListBox.Items[App.Mods[i].Item1.order];
+                        var secondModItem = modListBox.Items[App.Mods[i + 1].Item1.order];
+                        (firstModItem as CheckBox).Foreground = Brushes.Red;
+                        (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].Item1.name;
+                        (secondModItem as CheckBox).Foreground = Brushes.Red;
+                        (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
+                    }
             }
             catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
         }
@@ -159,40 +217,7 @@ namespace MhwModManager
 
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var dialog = new WinForms.OpenFileDialog();
-                var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
-
-                if (!Directory.Exists(tmpFolder))
-                    Directory.CreateDirectory(tmpFolder);
-
-                // Dialog to select a mod archive
-                dialog.DefaultExt = "zip";
-                dialog.Filter = "Mod Archives (*.zip, *.rar, *.7z)|*.zip;*.rar;*.7z|all files|*";
-                dialog.Multiselect = true;
-                if (dialog.ShowDialog() == WinForms.DialogResult.OK)
-                {
-                    foreach (var file in dialog.FileNames)
-                    {
-                        // Separate the path and unzip mod
-                        var splittedPath = file.Split('\\');
-                        using (ArchiveFile archiveFile = new ArchiveFile(file))
-                            archiveFile.Extract(tmpFolder);
-
-                        // Get the name of the extracted folder (without the .zip at the end), not
-                        // the full path
-                        if (!InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]))
-                            // If the install fail
-                            MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                        Directory.Delete(tmpFolder, true);
-
-                        App.GetMods(); // Refresh the modlist
-                    }
-                }
-                UpdateModsList();
-            }
-            catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
+            App.AddMods();
         }
 
         private bool CheckFiles(string pathFirstMod, string pathSecondMod)
@@ -243,27 +268,6 @@ namespace MhwModManager
             catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
         }
 
-        private bool InstallMod(string path, string name)
-        {
-            foreach (var dir in Directory.GetDirectories(path))
-            {
-                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
-                        // If the mod isn't installed
-                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
-                    else
-                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return true;
-                }
-                else
-                {
-                    InstallMod(dir, name);
-                }
-            }
-            return false;
-        }
-
         private void itemChecked(object sender, RoutedEventArgs e)
         {
             try
@@ -292,6 +296,15 @@ namespace MhwModManager
                 info.ParseSettingsJSON(mod);
             }
             catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
+        }
+
+        private void modListBox_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                App.AddMods(files);
+            }
         }
 
         private void refreshMod_Click(object sender, RoutedEventArgs e)
@@ -356,62 +369,6 @@ namespace MhwModManager
                 App.logStream.WriteLine($"MHW Started");
             }
             catch (Exception ex) { App.logStream.WriteLine(ex.Message, "FATAL"); }
-        }
-
-        private void UpdateModsList()
-        {
-            try
-            {
-                modListBox.Items.Clear();
-                App.GetMods();
-
-                foreach (var mod in App.Mods)
-                {
-                    // Increase the order count if didn't exist
-                    if (mod.Item1.order >= App.Mods.Count())
-                        mod.Item1.order = App.Mods.Count() - 1;
-
-                    var modItem = new CheckBox
-                    {
-                        Tag = mod.Item1.order,
-                        Content = mod.Item1.name
-                    };
-                    modItem.IsChecked = mod.Item1.activated;
-                    modItem.Checked += itemChecked;
-                    modItem.Unchecked += itemChecked;
-                    // Adding the context menu
-                    var style = Application.Current.FindResource("CheckBoxListItem") as Style;
-                    modItem.Style = style;
-                    foreach (MenuItem item in modItem.ContextMenu.Items)
-                    {
-                        if (item.Tag.ToString() == "rem")
-                        {
-                            item.Click -= remModContext_Click;
-                            item.Click += remModContext_Click;
-                        }
-                        else if (item.Tag.ToString() == "edit")
-                        {
-                            item.Click -= editModContext_Click;
-                            item.Click += editModContext_Click;
-                        }
-                    }
-
-                    modListBox.Items.Add(modItem);
-                }
-
-                // Check if there's mods conflicts
-                for (int i = 0; i < App.Mods.Count() - 1; i++)
-                    if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].Item2), Path.Combine(App.ModsPath, App.Mods[i + 1].Item2)))
-                    {
-                        var firstModItem = modListBox.Items[App.Mods[i].Item1.order];
-                        var secondModItem = modListBox.Items[App.Mods[i + 1].Item1.order];
-                        (firstModItem as CheckBox).Foreground = Brushes.Red;
-                        (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].Item1.name;
-                        (secondModItem as CheckBox).Foreground = Brushes.Red;
-                        (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
-                    }
-            }
-            catch (Exception e) { App.logStream.WriteLine(e.Message, "FATAL"); }
         }
 
         private void webMod_Click(object sender, RoutedEventArgs e)

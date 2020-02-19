@@ -5,6 +5,7 @@ using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
 using Newtonsoft.Json;
+using SevenZipExtractor;
 
 namespace MhwModManager
 {
@@ -58,6 +59,69 @@ namespace MhwModManager
                 Updater();
             }
             catch (Exception e) { logStream.WriteLine(e.Message, "FATAL"); }
+        }
+
+        public static void AddMods(params string[] paths)
+        {
+            try
+            {
+                if (paths == null || paths.Length == 0)
+                {
+                    var dialog = new WinForms.OpenFileDialog();
+                    // Dialog to select a mod archive
+                    dialog.DefaultExt = "zip";
+                    dialog.Filter = "Mod Archives (*.zip, *.rar, *.7z)|*.zip;*.rar;*.7z|all files|*";
+                    dialog.Multiselect = true;
+                    if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                        paths = dialog.FileNames;
+                    else
+                        return;
+                }
+                var tmpFolder = Path.Combine(Path.GetTempPath(), "SMMMaddMod");
+
+                if (!Directory.Exists(tmpFolder))
+                    Directory.CreateDirectory(tmpFolder);
+
+                foreach (var file in paths)
+                {
+                    // Separate the path and unzip mod
+                    var splittedPath = file.Split('\\');
+                    using (ArchiveFile archiveFile = new ArchiveFile(file))
+                        archiveFile.Extract(tmpFolder);
+
+                    // Get the name of the extracted folder (without the .zip at the end), not the
+                    // full path
+                    if (!InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]))
+                        // If the install fail
+                        MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Directory.Delete(tmpFolder, true);
+
+                    GetMods(); // Refresh the modlist
+                }
+                MhwModManager.MainWindow.Instance.UpdateModsList();
+            }
+            catch (Exception ex) { logStream.WriteLine(ex.Message, "FATAL"); }
+        }
+
+        public static bool InstallMod(string path, string name)
+        {
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
+                        // If the mod isn't installed
+                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
+                    else
+                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
+                else
+                {
+                    InstallMod(dir, name);
+                }
+            }
+            return false;
         }
 
         public static void ReloadTheme()
@@ -190,7 +254,8 @@ namespace MhwModManager
                     else
                         order = App.Mods.Count();
 
-                    // Get the name of the extracted folder (without the .zip at the end), not the full path
+                    // Get the name of the extracted folder (without the .zip at the end), not the
+                    // full path
                     var foldName = path.Split('\\');
                     name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
 
