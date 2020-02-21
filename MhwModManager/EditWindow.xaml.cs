@@ -30,8 +30,8 @@ namespace MhwModManager
             nameTB.TextChanged += nameTB_TextChanged;
 
             order = mod.Item1.order + 1;
-            orderTB.Text = order.ToString();
-            orderTB.TextChanged += orderTB_TextChanged;
+            //orderTB.Text = order.ToString();
+            //orderTB.TextChanged += orderTB_TextChanged;
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
@@ -79,7 +79,7 @@ namespace MhwModManager
         {
             try
             {
-                order = int.Parse(orderTB.Text);
+                //order = int.Parse(orderTB.Text);
             }
             catch (FormatException)
             {
