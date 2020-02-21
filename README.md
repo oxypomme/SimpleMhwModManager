@@ -24,6 +24,13 @@ A button to add a mod, a second one to delete a mod.
 
 ## Changelog
 
+- v0.0.8
+  - [FIXED] Now you can add a mod
+  - Removed useless remove big button (you can remove a mod with the right click)
+  - Repair Button (reset settings and mod folder)
+  - Can drop mods files into the window
+  - Can rearrange the order of mods by drag&droppin'
+  - No more order in edit mod
 - v0.0.7
   - [FIXED] Fixed order bugs
   - [FIXED] Multiselect when adding mods now works

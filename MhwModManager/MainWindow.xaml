@@ -23,9 +23,6 @@
                 <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/add.png" />
                 </Button>
-                <Button Name="removeMod" Click="remMod_Click" ToolTip="Remove selected Mod" Width="24" HorizontalAlignment="Left">
-                    <Image Source="icons/remove.png" />
-                </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 <Button Name="refreshMod" Click="refreshMod_Click" ToolTip="Update the modlist" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/refresh.png" />
@@ -42,7 +39,11 @@
                 <Image Source="icons/launch.png" />
             </Button>
         </Grid>
-        <ListBox Name="modListBox" Margin="3" Grid.Row="1">
+        <ListBox Name="modListBox" Margin="3" Grid.Row="1" Drop="modListBox_Drop" AllowDrop="True"
+                 PreviewMouseLeftButtonDown="modListBox_PreviewMouseLeftButtonDown"
+                 PreviewMouseLeftButtonUp="modListBox_PreviewMouseLeftButtonUp"
+                 PreviewMouseMove="modListBox_PreviewMouseMove"
+                 DragEnter="modListBox_DragEnter">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="addModContext" Click="addMod_Click">

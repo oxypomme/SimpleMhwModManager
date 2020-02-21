@@ -14,22 +14,24 @@ namespace MhwModManager
         private int index;
         private int? order;
 
-        public EditWindow((ModInfo, string) modInfo)
+        public EditWindow((ModInfo, string)? modInfo)
         {
             InitializeComponent();
 
             MakeDarkTheme();
 
-            modPath = modInfo.Item2;
+            var mod = modInfo.Value;
 
-            index = App.Mods.IndexOf(modInfo);
+            modPath = mod.Item2;
 
-            nameTB.Text = modInfo.Item1.name;
+            index = App.Mods.IndexOf(mod);
+
+            nameTB.Text = mod.Item1.name;
             nameTB.TextChanged += nameTB_TextChanged;
 
-            order = modInfo.Item1.order + 1;
-            orderTB.Text = order.ToString();
-            orderTB.TextChanged += orderTB_TextChanged;
+            order = mod.Item1.order + 1;
+            //orderTB.Text = order.ToString();
+            //orderTB.TextChanged += orderTB_TextChanged;
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
@@ -77,7 +79,7 @@ namespace MhwModManager
         {
             try
             {
-                order = int.Parse(orderTB.Text);
+                //order = int.Parse(orderTB.Text);
             }
             catch (FormatException)
             {
