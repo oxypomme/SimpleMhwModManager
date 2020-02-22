@@ -13,48 +13,68 @@ Go to the link and then click on "Download .NET Framework Runtime"
 
 ## Installation
 
-Download the `setup.exe`, install it, you can install some mods.
+With setup version : Download the `setup.exe`, install it, launch it, you can install some mods.
+
+With portable version : Just extract the archive and launch `MhwModManager.exe`, you can install some mods.
 
 ## Usage
 
+Installing a mod is very simple :
+
 ![gif](https://i.imgur.com/JAmO8Bf.gif)
 
-A button to add a mod, a second one to delete a mod.
- Check the mods you want to install and you can play.
+You can install a mod by the drag and drop :
+
+![drag](https://i.imgur.com/y5AentF.gif)
+
+Check the mods you want to install and you can play.
+
+## Main features
+
+Install a mod is good, but how to uninstall it ? Just uncheck it and remove it :
+
+![remove](https://i.imgur.com/AT3nO1b.gif)
+
+By default, the name of the mod is the name of the archive, but you can change that :
+
+![rename](https://i.imgur.com/M8KgDvE.gif)
+
+You can drag mods for organise your mod list (No effects on conflicts) :
+
+![order](https://i.imgur.com/i09sJgo.gif)
+
+When 2 mods enters in conflict, the names of the concerned mods will be in italic, hover your mouse over it to see which mod is in conflict :
+
+![conflict](https://i.imgur.com/Vs7fQEO.png)
+
+As you can see with the other exemples, a Dark Mode is available !
 
 ## Changelog
 
 - v0.0.9
+  -
 - v0.0.8
-  - [FIXED] Now you can add a mod
   - Removed useless remove big button (you can remove a mod with the right click)
   - Repair Button (reset settings and mod folder)
   - Can drop mods files into the window
   - Can rearrange the order of mods by drag&droppin'
   - No more order in edit mod
 - v0.0.7
-  - [FIXED] Fixed order bugs
-  - [FIXED] Multiselect when adding mods now works
   - Changing the MHW path have now a default path
   - Better logs
   - Removed useless code
   - Dark Theme \o/
   - Better Lighty Theme
 - v0.0.6
-  - [FIXED] If Steam isn't installed, the manager will work (hello cracked games)
   - Portable version is now available (somewhat, because it's still needs the .NET Framework) !
 - v0.0.5
-  - [FIXED] Changing order broke the program
-  - [FIXED] The search of nativePC in the mod is now case insensitive
   - Correct way of showing the order
   - Signals conflicts
 - v0.0.4
   - Setup now available
 - v0.0.3
-  - [FIXED] Can't activate a new mod !
+  - BIG BUG FIX
 - v0.0.2
-  - [FIXED] The application not showing after setting up the MHW path
-  - [FIXED] Warning message when install a new mod
   - Various Optimisations
   - Better management of mods
   - Detect the MHW Path
