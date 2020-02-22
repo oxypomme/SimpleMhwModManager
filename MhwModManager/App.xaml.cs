@@ -113,9 +113,9 @@ namespace MhwModManager
             {
                 if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
+                    if (!Directory.Exists(Path.Combine(ModsPath, name)))
                         // If the mod isn't installed
-                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
+                        MoveDirectory(dir, Path.Combine(ModsPath, name));
                     else
                         MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                     return true;
