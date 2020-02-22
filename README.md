@@ -24,6 +24,7 @@ A button to add a mod, a second one to delete a mod.
 
 ## Changelog
 
+- v0.0.9
 - v0.0.8
   - [FIXED] Now you can add a mod
   - Removed useless remove big button (you can remove a mod with the right click)
