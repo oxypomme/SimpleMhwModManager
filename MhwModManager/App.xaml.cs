@@ -4,6 +4,7 @@ using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
 using SevenZipExtractor;
+using System.Linq;
 
 namespace MhwModManager
 {
@@ -112,9 +113,9 @@ namespace MhwModManager
             {
                 if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
+                    if (!Directory.Exists(Path.Combine(ModsPath, name)))
                         // If the mod isn't installed
-                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
+                        MoveDirectory(dir, Path.Combine(ModsPath, name));
                     else
                         MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                     return true;
@@ -195,6 +196,64 @@ namespace MhwModManager
                     var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
                     if (result == MessageBoxResult.Yes)
                         System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
+                }
+            }
+            catch (Exception e) { logStream.Error(e.ToString()); }
+        }
+
+        public static void MoveFile(string source, string destination)
+        {
+            try
+            {
+                if (Path.GetPathRoot(source) == Path.GetPathRoot(destination))
+                    File.Move(source, destination);
+                else
+                {
+                    using (var sourceStream = new FileStream(source, FileMode.Open, FileAccess.Read))
+                    using (var destinationStream = new FileStream(destination, FileMode.Create, FileAccess.Write))
+                        sourceStream.CopyTo(destinationStream);
+                    File.Delete(source);
+                }
+            }
+            catch (Exception e) { logStream.Error(e.ToString()); }
+        }
+
+        public static void MoveDirectory(string source, string destination)
+        {
+            try
+            {
+                if (Directory.GetDirectoryRoot(source) == Directory.GetDirectoryRoot(destination))
+                    Directory.Move(source, destination);
+                else
+                {
+                    var requiredFolders = new List<string>();
+                    void GetFolders(string path, ICollection<string> list)
+                    {
+                        foreach (var dir in Directory.GetDirectories(path))
+                        {
+                            var subDirs = Directory.GetDirectories(dir);
+                            if (subDirs.Any())
+                                foreach (var subDir in subDirs)
+                                    GetFolders(subDir, list);
+                            else
+                                list.Add(Path.Combine(destination, dir.Substring(source.Length + 1)));
+                        }
+                    }
+                    GetFolders(source, requiredFolders);
+                    foreach (var folder in requiredFolders)
+                        Directory.CreateDirectory(folder);
+                    var requiredFiles = new List<(string, string)>();
+                    void GetFiles(string path, ICollection<(string, string)> list)
+                    {
+                        foreach (var file in Directory.GetFiles(path))
+                            list.Add((file, Path.Combine(destination, file.Substring(source.Length + 1))));
+                        foreach (var folder in Directory.GetDirectories(path))
+                            GetFiles(folder, list);
+                    }
+                    GetFiles(source, requiredFiles);
+                    foreach (var file in requiredFiles)
+                        MoveFile(file.Item1, file.Item2);
+                    Directory.Delete(source, true);
                 }
             }
             catch (Exception e) { logStream.Error(e.ToString()); }
