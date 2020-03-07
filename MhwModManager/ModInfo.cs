@@ -34,7 +34,7 @@ namespace MhwModManager
 
                     App.logStream.Warning($"Mod {name} info not found");
 
-                    ParseSettingsJSON(folderName);
+                    ParseSettingsJSON();
                 }
                 else
                 {
@@ -46,9 +46,15 @@ namespace MhwModManager
                     }
 
                     name = sets.name;
-                    category = sets.category;
                     activated = sets.activated;
                     order = sets.order;
+                    category = sets.category;
+                    if (sets.category == null)
+                    {
+                        // If old version of info mod, add new infos
+                        category = "None";
+                        ParseSettingsJSON();
+                    }
 
                     App.logStream.Log($"Mod {name} info found");
                 }
@@ -56,12 +62,12 @@ namespace MhwModManager
             catch (Exception e) { App.logStream.Error(e.ToString()); }
         }
 
-        public void ParseSettingsJSON(string path)
+        public void ParseSettingsJSON()
         {
             try
             {
                 App.logStream.Log("Mod info updated");
-                using (StreamWriter file = new StreamWriter(Path.Combine(path, "mod.info")))
+                using (StreamWriter file = new StreamWriter(Path.Combine(App.ModsPath, path, "mod.info")))
                 {
                     file.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
                     file.Close();

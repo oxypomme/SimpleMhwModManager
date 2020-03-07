@@ -14,22 +14,20 @@ namespace MhwModManager
         private int index;
         private int? order;
 
-        public EditWindow((ModInfo, string)? modInfo)
+        public EditWindow(ModInfo modInfo)
         {
             InitializeComponent();
 
             MakeDarkTheme();
 
-            var mod = modInfo.Value;
+            modPath = modInfo.path;
 
-            modPath = mod.Item2;
+            index = App.Mods.IndexOf(modInfo);
 
-            index = App.Mods.IndexOf(mod);
-
-            nameTB.Text = mod.Item1.name;
+            nameTB.Text = modInfo.name;
             nameTB.TextChanged += nameTB_TextChanged;
 
-            order = mod.Item1.order + 1;
+            order = modInfo.order + 1;
             //orderTB.Text = order.ToString();
             //orderTB.TextChanged += orderTB_TextChanged;
         }
@@ -40,16 +38,16 @@ namespace MhwModManager
             {
                 foreach (var mod in App.Mods)
                 {
-                    if (mod.Item1.order == order.Value - 1)
+                    if (mod.order == order.Value - 1)
                     {
                         // If the new order is already given, exchange them
-                        mod.Item1.order = App.Mods[index].Item1.order;
-                        mod.Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, mod.Item2));
+                        mod.order = App.Mods[index].order;
+                        mod.ParseSettingsJSON();
                         break;
                     }
                 }
-                App.Mods[index].Item1.order = order.Value - 1;
-                App.Mods[index].Item1.ParseSettingsJSON(System.IO.Path.Combine(App.ModsPath, modPath));
+                App.Mods[index].order = order.Value - 1;
+                App.Mods[index].ParseSettingsJSON();
                 Close();
             }
             else
@@ -72,7 +70,7 @@ namespace MhwModManager
 
         private void nameTB_TextChanged(object sender, TextChangedEventArgs e)
         {
-            App.Mods[index].Item1.name = nameTB.Text;
+            App.Mods[index].name = nameTB.Text;
         }
 
         private void orderTB_TextChanged(object sender, TextChangedEventArgs e)

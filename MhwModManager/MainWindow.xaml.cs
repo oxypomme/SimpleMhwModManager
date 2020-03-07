@@ -105,10 +105,10 @@ namespace MhwModManager
                     var modItem = new CheckBox
                     {
                         Tag = mod,
-                        Content = mod.Item1.name,
+                        Content = mod.name,
                         Width = 300
                     };
-                    modItem.IsChecked = mod.Item1.activated;
+                    modItem.IsChecked = mod.activated;
                     modItem.Checked += itemChecked;
                     modItem.Unchecked += itemChecked;
                     // Adding the context menu
@@ -133,16 +133,16 @@ namespace MhwModManager
 
                 // Check if there's mods conflicts
                 for (int i = 0; i < App.Mods.Count() - 1; i++)
-                    if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].Item2), Path.Combine(App.ModsPath, App.Mods[i + 1].Item2)))
+                    if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].path), Path.Combine(App.ModsPath, App.Mods[i + 1].path)))
                     {
-                        var firstModItem = modListBox.Items[App.Mods[i].Item1.order];
-                        var secondModItem = modListBox.Items[App.Mods[i + 1].Item1.order];
+                        var firstModItem = modListBox.Items[App.Mods[i].order];
+                        var secondModItem = modListBox.Items[App.Mods[i + 1].order];
                         //(firstModItem as CheckBox).Foreground = Brushes.Red;
                         (firstModItem as CheckBox).FontStyle = FontStyles.Italic;
-                        (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].Item1.name;
+                        (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].name;
                         //(secondModItem as CheckBox).Foreground = Brushes.Red;
                         (secondModItem as CheckBox).FontStyle = FontStyles.Italic;
-                        (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].Item1.name;
+                        (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].name;
                     }
             }
             catch (Exception e) { App.logStream.Error(e.Message); }
@@ -256,7 +256,7 @@ namespace MhwModManager
             return true; // return true if everything's fine
         }
 
-        private void editMod((ModInfo, string)? modInfo)
+        private void editMod(ModInfo modInfo)
         {
             var editWindow = new EditWindow(modInfo);
             editWindow.Owner = Application.Current.MainWindow;
@@ -269,7 +269,7 @@ namespace MhwModManager
             try
             {
                 var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-                editMod(caller.Tag as (ModInfo, string)?);
+                editMod(caller.Tag as ModInfo);
             }
             catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
@@ -299,7 +299,7 @@ namespace MhwModManager
                 var info = mod.Item1;
                 info.GenInfo(modPath);
                 info.activated = (sender as CheckBox).IsChecked.Value;
-                info.ParseSettingsJSON(modPath);
+                info.ParseSettingsJSON();
             }
             catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
@@ -338,15 +338,15 @@ namespace MhwModManager
                 {
                     modListBox.Items.Remove(_realDragSource);
                     modListBox.Items.Insert(droptargetIndex, _realDragSource);
-                    var toMove = App.Mods.FindIndex(mod => mod.Item1.name == ((CheckBox)_realDragSource).Content.ToString());
+                    var toMove = App.Mods.FindIndex(mod => mod.name == ((CheckBox)_realDragSource).Content.ToString());
                     var buffer = App.Mods[toMove];
                     App.Mods.RemoveAt(toMove);
                     App.Mods.Insert(droptargetIndex, buffer);
                     int index = 0;
                     foreach (var mod in App.Mods)
                     {
-                        mod.Item1.order = index++;
-                        mod.Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, mod.Item2));
+                        mod.order = index++;
+                        mod.ParseSettingsJSON();
                     }
                     UpdateModsList();
                 }
@@ -408,12 +408,12 @@ namespace MhwModManager
                 foreach (var cb in modListBox.SelectedItems)
                 {
                     var caller = (cb as CheckBox);
-                    var mod = ((sender as CheckBox).Tag as (ModInfo, string)?).Value;
-                    App.logStream.Log($"Mod {mod.Item1.name} removed");
-                    Directory.Delete(Path.Combine(App.ModsPath, mod.Item2), true);
+                    var mod = (sender as CheckBox).Tag as ModInfo;
+                    App.logStream.Log($"Mod {mod.name} removed");
+                    Directory.Delete(Path.Combine(App.ModsPath, mod.path), true);
                     App.Mods.Remove(mod);
-                    for (int i = mod.Item1.order; i < App.Mods.Count(); i++)
-                        App.Mods[i].Item1.order = i;
+                    for (int i = mod.order; i < App.Mods.Count(); i++)
+                        App.Mods[i].order = i;
                 }
                 UpdateModsList();
             }
@@ -425,13 +425,13 @@ namespace MhwModManager
             try
             {
                 var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-                var mod = ((caller as CheckBox).Tag as (ModInfo, string)?).Value;
-                Directory.Delete(Path.Combine(App.ModsPath, mod.Item2), true);
+                var mod = (caller as CheckBox).Tag as ModInfo;
+                Directory.Delete(Path.Combine(App.ModsPath, mod.path), true);
                 App.Mods.Remove(mod);
-                for (int i = mod.Item1.order; i < App.Mods.Count(); i++)
+                for (int i = mod.order; i < App.Mods.Count(); i++)
                 {
-                    App.Mods[i].Item1.order = i;
-                    App.Mods[i].Item1.ParseSettingsJSON(Path.Combine(App.ModsPath, App.Mods[i].Item2));
+                    App.Mods[i].order = i;
+                    App.Mods[i].ParseSettingsJSON();
                 }
 
                 UpdateModsList();
