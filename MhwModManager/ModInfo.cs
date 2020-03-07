@@ -11,11 +11,17 @@ namespace MhwModManager
         public string name { get; set; }
         public int order { get; set; }
 
-        public void GenInfo(string path, int? index = null)
+        public string category { get; set; }
+
+        [NonSerialized] public string path;
+
+        public void GenInfo(string folderName, int? index = null)
         {
             try
             {
-                if (!File.Exists(Path.Combine(path, "mod.info")))
+                path = folderName;
+
+                if (!File.Exists(Path.Combine(App.ModsPath, path, "mod.info")))
                 {
                     activated = false;
                     if (index != null)
@@ -23,27 +29,26 @@ namespace MhwModManager
                     else
                         order = App.Mods.Count();
 
-                    // Get the name of the extracted folder (without the .zip at the end), not the
-                    // full path
-                    var foldName = path.Split('\\');
-                    name = foldName[foldName.GetLength(0) - 1].Split('.')[0];
+                    name = folderName;
+                    category = "None";
 
                     App.logStream.Warning($"Mod {name} info not found");
 
-                    ParseSettingsJSON(path);
+                    ParseSettingsJSON(folderName);
                 }
                 else
                 {
                     ModInfo sets;
-                    using (StreamReader file = new StreamReader(Path.Combine(path, "mod.info")))
+                    using (StreamReader file = new StreamReader(Path.Combine(App.ModsPath, path, "mod.info")))
                     {
                         sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
                         file.Close();
                     }
 
+                    name = sets.name;
+                    category = sets.category;
                     activated = sets.activated;
                     order = sets.order;
-                    name = sets.name;
 
                     App.logStream.Log($"Mod {name} info found");
                 }
