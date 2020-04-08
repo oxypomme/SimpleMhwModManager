@@ -138,6 +138,7 @@
       <DependentUpon>EditWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LogStream.cs" />
+    <Compile Include="ModCheckBox.cs" />
     <Compile Include="ModInfo.cs" />
     <Compile Include="Setting.cs" />
     <Compile Include="SettingsDialog.xaml.cs">
@@ -167,6 +168,10 @@
     <Page Include="SettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Resource Include="Themes\DarkTheme.xaml">
       <Generator>MSBuild:Compile</Generator>

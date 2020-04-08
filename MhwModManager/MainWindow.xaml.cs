@@ -15,7 +15,7 @@ using System.Windows.Input;
 namespace MhwModManager
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml-
+    /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -102,13 +102,14 @@ namespace MhwModManager
 
                 foreach (var mod in App.Mods)
                 {
-                    var modItem = new CheckBox
+                    var modItem = new ModCheckBox
                     {
                         Tag = mod,
-                        Content = mod.name,
-                        Width = 300
+                        ModName = mod.name,
+                        Category = mod.category
+                        //Width = 300
                     };
-                    modItem.IsChecked = mod.activated;
+                    modItem.IsActive = mod.activated;
                     modItem.Checked += itemChecked;
                     modItem.Unchecked += itemChecked;
                     // Adding the context menu
@@ -137,12 +138,12 @@ namespace MhwModManager
                     {
                         var firstModItem = modListBox.Items[App.Mods[i].order];
                         var secondModItem = modListBox.Items[App.Mods[i + 1].order];
-                        //(firstModItem as CheckBox).Foreground = Brushes.Red;
-                        (firstModItem as CheckBox).FontStyle = FontStyles.Italic;
-                        (firstModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].name;
-                        //(secondModItem as CheckBox).Foreground = Brushes.Red;
-                        (secondModItem as CheckBox).FontStyle = FontStyles.Italic;
-                        (secondModItem as CheckBox).ToolTip = "Conflict with " + App.Mods[i].name;
+                        //(firstModItem as ModCheckBox).Foreground = Brushes.Red;
+                        (firstModItem as ModCheckBox).FontStyle = FontStyles.Italic;
+                        (firstModItem as ModCheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].name;
+                        //(secondModItem as ModCheckBox).Foreground = Brushes.Red;
+                        (secondModItem as ModCheckBox).FontStyle = FontStyles.Italic;
+                        (secondModItem as ModCheckBox).ToolTip = "Conflict with " + App.Mods[i].name;
                     }
             }
             catch (Exception e) { App.logStream.Error(e.Message); }
@@ -268,7 +269,7 @@ namespace MhwModManager
         {
             try
             {
-                var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
+                var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as ModCheckBox);
                 editMod(caller.Tag as ModInfo);
             }
             catch (Exception ex) { App.logStream.Error(ex.ToString()); }
@@ -279,27 +280,28 @@ namespace MhwModManager
             try
             {
                 // Get the full path of the mod
-                var mod = ((sender as CheckBox).Tag as (ModInfo, string)?).Value;
-                var modPath = Path.Combine(App.ModsPath, mod.Item2);
+                var mod = (sender as ModCheckBox).Tag as ModInfo;
+                var modPath = Path.Combine(App.ModsPath, mod.path);
 
-                if ((sender as CheckBox).IsChecked.Value == true)
+                if ((sender as ModCheckBox).IsActive)
                 {
-                    // Install the mod
-                    DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
-                    App.logStream.Log($"{mod.Item1.name} installed");
-                }
-                else
-                {
+                    (sender as ModCheckBox).IsActive = false;
                     // Desinstall the mod
                     DeleteMod(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                     CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
-                    App.logStream.Log($"{mod.Item1.name} unistalled");
+                    App.logStream.Log($"{mod.name} unistalled");
+                }
+                else
+                {
+                    (sender as ModCheckBox).IsActive = true;
+                    // Install the mod
+                    DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
+                    App.logStream.Log($"{mod.name} installed");
                 }
 
-                var info = mod.Item1;
-                info.GenInfo(modPath);
-                info.activated = (sender as CheckBox).IsChecked.Value;
-                info.ParseSettingsJSON();
+                mod.GenInfo(mod.path);
+                mod.activated = (sender as ModCheckBox).IsActive;
+                mod.ParseSettingsJSON();
             }
             catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
@@ -338,7 +340,7 @@ namespace MhwModManager
                 {
                     modListBox.Items.Remove(_realDragSource);
                     modListBox.Items.Insert(droptargetIndex, _realDragSource);
-                    var toMove = App.Mods.FindIndex(mod => mod.name == ((CheckBox)_realDragSource).Content.ToString());
+                    var toMove = App.Mods.FindIndex(mod => mod.name == ((ModCheckBox)_realDragSource).Content.ToString());
                     var buffer = App.Mods[toMove];
                     App.Mods.RemoveAt(toMove);
                     App.Mods.Insert(droptargetIndex, buffer);
@@ -407,8 +409,8 @@ namespace MhwModManager
             {
                 foreach (var cb in modListBox.SelectedItems)
                 {
-                    var caller = (cb as CheckBox);
-                    var mod = (sender as CheckBox).Tag as ModInfo;
+                    var caller = (cb as ModCheckBox);
+                    var mod = (sender as ModCheckBox).Tag as ModInfo;
                     App.logStream.Log($"Mod {mod.name} removed");
                     Directory.Delete(Path.Combine(App.ModsPath, mod.path), true);
                     App.Mods.Remove(mod);
@@ -424,8 +426,8 @@ namespace MhwModManager
         {
             try
             {
-                var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as CheckBox);
-                var mod = (caller as CheckBox).Tag as ModInfo;
+                var caller = (((sender as MenuItem).Parent as ContextMenu).PlacementTarget as ModCheckBox);
+                var mod = (caller as ModCheckBox).Tag as ModInfo;
                 Directory.Delete(Path.Combine(App.ModsPath, mod.path), true);
                 App.Mods.Remove(mod);
                 for (int i = mod.order; i < App.Mods.Count(); i++)
