@@ -13,7 +13,7 @@
             <TextBox Name="nameTB" MinWidth="200" MaxWidth="250" Margin="0,5" />
         </WrapPanel>
         <WrapPanel>
-            <TextBlock Text="Categorie :" Margin="5" />
+            <TextBlock Text="Category :" Margin="5" />
             <ComboBox Name="categCB" Width="180" Margin="0,5" SelectionChanged="categCB_SelectionChanged" />
         </WrapPanel>
         <WrapPanel HorizontalAlignment="Right">
