@@ -14,7 +14,7 @@
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <CheckBox IsChecked="{TemplateBinding IsActive}" Grid.Column="0" />
+                        <CheckBox IsChecked="{TemplateBinding IsChecked}" Grid.Column="0" />
                         <TextBlock Text="{TemplateBinding ModName}" Margin="5" Grid.Column="1" />
                         <TextBlock Text="{TemplateBinding Category}" Margin="5" Grid.Column="3" />
                     </Grid>
