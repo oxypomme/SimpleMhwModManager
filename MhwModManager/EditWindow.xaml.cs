@@ -10,9 +10,8 @@ namespace MhwModManager
     /// </summary>
     public partial class EditWindow : Window
     {
-        private string modPath;
-        private int index;
-        private int? order;
+        private ModInfo modInfo;
+        private string initCateg;
 
         public EditWindow(ModInfo modInfo)
         {
@@ -20,38 +19,27 @@ namespace MhwModManager
 
             MakeDarkTheme();
 
-            modPath = modInfo.path;
-
-            index = App.Mods.IndexOf(modInfo);
+            this.modInfo = modInfo;
 
             nameTB.Text = modInfo.name;
             nameTB.TextChanged += nameTB_TextChanged;
 
-            order = modInfo.order + 1;
-            //orderTB.Text = order.ToString();
-            //orderTB.TextChanged += orderTB_TextChanged;
+            ReloadCB();
+
+            categCB.SelectedItem = initCateg = modInfo.category;
+        }
+
+        private void ReloadCB()
+        {
+            var categs = App.Categories;
+            categs.Add("<new>");
+            categCB.ItemsSource = categs;
         }
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
         {
-            if (order != null)
-            {
-                foreach (var mod in App.Mods)
-                {
-                    if (mod.order == order.Value - 1)
-                    {
-                        // If the new order is already given, exchange them
-                        mod.order = App.Mods[index].order;
-                        mod.ParseSettingsJSON();
-                        break;
-                    }
-                }
-                App.Mods[index].order = order.Value - 1;
-                App.Mods[index].ParseSettingsJSON();
-                Close();
-            }
-            else
-                MessageBox.Show("The order must be a number !", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+            modInfo.ParseSettingsJSON();
+            Close();
         }
 
         private void MakeDarkTheme()
@@ -70,19 +58,31 @@ namespace MhwModManager
 
         private void nameTB_TextChanged(object sender, TextChangedEventArgs e)
         {
-            App.Mods[index].name = nameTB.Text;
+            modInfo.name = nameTB.Text;
         }
 
-        private void orderTB_TextChanged(object sender, TextChangedEventArgs e)
+        private void categCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
+            if (categCB.SelectedItem as string == "<new>")
             {
-                //order = int.Parse(orderTB.Text);
+                try
+                {
+                    var categoriesManager = new CategoriesManager();
+                    categoriesManager.Owner = Application.Current.MainWindow;
+
+                    categoriesManager.ShowDialog();
+
+                    ReloadCB();
+
+                    if (categoriesManager.nameTB.Text.Trim() != "")
+                        categCB.SelectedItem = categoriesManager.nameTB.Text;
+                    else
+                        categCB.SelectedItem = initCateg;
+                }
+                catch (Exception ex) { App.logStream.Error(ex.ToString()); }
             }
-            catch (FormatException)
-            {
-                order = null;
-            }
+            else
+                modInfo.category = categCB.SelectedItem as string;
         }
     }
 }
