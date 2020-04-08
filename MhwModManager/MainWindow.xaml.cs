@@ -102,19 +102,18 @@ namespace MhwModManager
 
                 foreach (var mod in App.Mods)
                 {
+                    var style = Application.Current.FindResource("CheckBoxListItem") as Style;
                     var modItem = new ModCheckBox
                     {
                         Info = mod,
                         ModName = mod.name,
-                        Category = mod.category
-                        //Width = 300
+                        Category = mod.category,
+                        Style = style
                     };
                     modItem.Checked += itemChecked;
                     modItem.Unchecked += itemChecked;
                     modItem.IsChecked = mod.activated;
                     // Adding the context menu
-                    var style = Application.Current.FindResource("CheckBoxListItem") as Style;
-                    modItem.Style = style;
                     foreach (MenuItem item in modItem.ContextMenu.Items)
                     {
                         if (item.Tag.ToString() == "rem")
@@ -136,14 +135,12 @@ namespace MhwModManager
                 for (int i = 0; i < App.Mods.Count() - 1; i++)
                     if (!CheckFiles(Path.Combine(App.ModsPath, App.Mods[i].path), Path.Combine(App.ModsPath, App.Mods[i + 1].path)))
                     {
-                        var firstModItem = modListBox.Items[App.Mods[i].order];
-                        var secondModItem = modListBox.Items[App.Mods[i + 1].order];
-                        //(firstModItem as ModCheckBox).Foreground = Brushes.Red;
-                        (firstModItem as ModCheckBox).FontStyle = FontStyles.Italic;
-                        (firstModItem as ModCheckBox).ToolTip = "Conflict with " + App.Mods[i + 1].name;
-                        //(secondModItem as ModCheckBox).Foreground = Brushes.Red;
-                        (secondModItem as ModCheckBox).FontStyle = FontStyles.Italic;
-                        (secondModItem as ModCheckBox).ToolTip = "Conflict with " + App.Mods[i].name;
+                        var firstModItem = modListBox.Items[App.Mods[i].order] as ModCheckBox;
+                        var secondModItem = modListBox.Items[App.Mods[i + 1].order] as ModCheckBox;
+                        firstModItem.FontStyle = FontStyles.Italic;
+                        firstModItem.ToolTip = "Conflict with " + App.Mods[i + 1].name;
+                        secondModItem.FontStyle = FontStyles.Italic;
+                        secondModItem.ToolTip = "Conflict with " + App.Mods[i].name;
                     }
             }
             catch (Exception e) { App.logStream.Error(e.Message); }

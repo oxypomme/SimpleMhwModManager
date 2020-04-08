@@ -7,16 +7,15 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ModCheckBox}">
-                    <Grid>
+                    <Grid Width="312">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="4*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <CheckBox IsChecked="{TemplateBinding IsChecked}" Grid.Column="0" />
-                        <TextBlock Text="{TemplateBinding ModName}" Margin="5" Grid.Column="1" />
-                        <TextBlock Text="{TemplateBinding Category}" Margin="5" Grid.Column="3" />
+                        <TextBlock Text="{TemplateBinding ModName}" Padding="5" Grid.Column="1" />
+                        <TextBlock Text="{TemplateBinding Category}" TextAlignment="Right" Padding="5" Grid.Column="2" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
