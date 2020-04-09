@@ -337,9 +337,8 @@ namespace MhwModManager
                 {
                     modListBox.Items.Remove(_realDragSource);
                     modListBox.Items.Insert(droptargetIndex, _realDragSource);
-                    var toMove = App.Mods.FindIndex(mod => mod.name == ((ModCheckBox)_realDragSource).Content.ToString());
-                    var buffer = App.Mods[toMove];
-                    App.Mods.RemoveAt(toMove);
+                    var buffer = ((ModCheckBox)_realDragSource).Info;
+                    App.Mods.Remove(buffer);
                     App.Mods.Insert(droptargetIndex, buffer);
                     int index = 0;
                     foreach (var mod in App.Mods)
