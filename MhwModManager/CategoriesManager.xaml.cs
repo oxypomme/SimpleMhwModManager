@@ -37,7 +37,6 @@ namespace MhwModManager
 
         private void validateBTN_Click(object sender, RoutedEventArgs e)
         {
-            App.Categories.Add(nameTB.Text);
             Close();
         }
 

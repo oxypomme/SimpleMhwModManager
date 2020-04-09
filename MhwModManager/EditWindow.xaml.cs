@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -29,10 +30,12 @@ namespace MhwModManager
             categCB.SelectedItem = initCateg = modInfo.category;
         }
 
-        private void ReloadCB()
+        internal void ReloadCB()
         {
-            var categs = App.Categories;
-            categs.Add("<new>");
+            var categs = new string[App.Categories.Count + 1];
+            App.Categories.CopyTo(categs);
+
+            categs[App.Categories.Count] = "<new>";
             categCB.ItemsSource = categs;
         }
 
@@ -68,14 +71,16 @@ namespace MhwModManager
                 try
                 {
                     var categoriesManager = new CategoriesManager();
-                    categoriesManager.Owner = Application.Current.MainWindow;
+                    categoriesManager.Owner = this;
 
                     categoriesManager.ShowDialog();
 
-                    ReloadCB();
-
                     if (categoriesManager.nameTB.Text.Trim() != "")
+                    {
+                        App.Categories.Add(categoriesManager.nameTB.Text);
                         categCB.SelectedItem = categoriesManager.nameTB.Text;
+                        ReloadCB();
+                    }
                     else
                         categCB.SelectedItem = initCateg;
                 }
