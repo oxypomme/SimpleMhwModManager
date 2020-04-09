@@ -382,17 +382,22 @@ namespace MhwModManager
 
         private void modListBox_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (_isDown)
+            try
             {
-                if ((_isDragging == false) && ((Math.Abs(e.GetPosition(modListBox).X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance) ||
-                    (Math.Abs(e.GetPosition(modListBox).Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)))
+                if (_isDown)
                 {
-                    _isDragging = true;
-                    _realDragSource = e.Source as UIElement;
-                    _realDragSource.CaptureMouse();
-                    DragDrop.DoDragDrop(_dummyDragSource, new DataObject("UIElement", e.Source, true), DragDropEffects.Move);
+                    if ((_isDragging == false) && ((Math.Abs(e.GetPosition(modListBox).X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance) ||
+                        (Math.Abs(e.GetPosition(modListBox).Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)))
+                    {
+                        _isDragging = true;
+                        _realDragSource = e.Source as UIElement;
+                        _realDragSource.CaptureMouse();
+                        DragDrop.DoDragDrop(_dummyDragSource, new DataObject("UIElement", e.Source, true), DragDropEffects.Move);
+                    }
                 }
             }
+            catch (NullReferenceException ex) { App.logStream.Error(ex.GetType().ToString() + ": " + ex.Message + " " + ex.TargetSite); }
+            catch (Exception ex) { App.logStream.Error(ex.ToString()); }
         }
 
         private void refreshMod_Click(object sender, RoutedEventArgs e)
