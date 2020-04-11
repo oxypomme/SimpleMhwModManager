@@ -473,5 +473,9 @@ namespace MhwModManager
         {
             App.logStream.Close();
         }
+
+        private void btn_help_Click(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }
