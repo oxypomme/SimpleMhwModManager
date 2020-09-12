@@ -476,6 +476,7 @@ namespace MhwModManager
 
         private void btn_help_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("Not Implemented yet", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }
