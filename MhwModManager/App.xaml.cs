@@ -4,6 +4,7 @@ using System.Windows;
 using System.IO;
 using WinForms = System.Windows.Forms;
 using SevenZipExtractor;
+using System.Linq;
 
 namespace MhwModManager
 {
@@ -24,8 +25,9 @@ namespace MhwModManager
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
-        public static List<(ModInfo, string)> Mods;
+        public static List<ModInfo> Mods;
         public static LogStream logStream;
+        public static HashSet<string> Categories;
 
         public App()
         {
@@ -94,37 +96,81 @@ namespace MhwModManager
 
                     // Get the name of the extracted folder (without the .zip at the end), not the
                     // full path
-                    if (!InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]))
-                        // If the install fail
-                        MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Directory.Delete(tmpFolder, true);
+                    InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]);
+                    try
+                    {
+                        Directory.Delete(tmpFolder, true);
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        //the folder may be missing if it has no nativePC and moved the entire folder, deleting it
+                    }
 
                     GetMods(); // Refresh the modlist
                 }
                 MhwModManager.MainWindow.Instance.UpdateModsList();
             }
-            catch (Exception ex) { logStream.Error(ex.Message); }
+            catch (Exception ex) { logStream.Error(ex); }
+        }
+
+        public static string[] GetRecursiveDirectories(string path)
+        {
+            var paths = new List<string>();
+            void addDir(string p)
+            {
+                paths.Add(p);
+                foreach (var item in Directory.GetDirectories(p))
+                    addDir(item);
+            }
+            addDir(path);
+            return paths.ToArray();
         }
 
         public static bool InstallMod(string path, string name)
         {
-            foreach (var dir in Directory.GetDirectories(path))
+            if (Directory.Exists(Path.Combine(ModsPath, name)))
+            // If the mod is installed
             {
-                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
+                MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+
+            var nativePCs = new List<string>();
+            foreach (var dir in GetRecursiveDirectories(path))
+            {
+                if (Path.GetFileName(dir).Equals("nativePC", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!Directory.Exists(Path.Combine(App.ModsPath, name)))
-                        // If the mod isn't installed
-                        Directory.Move(dir, Path.Combine(App.ModsPath, name));
-                    else
-                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    nativePCs.Add(dir);
+                    logStream.Log(Path.Combine(name, dir.Substring(path.Length + 1)) + " found.");
+                }
+            }
+            if (nativePCs.Count == 1)
+            {
+                MoveDirectory(nativePCs.First(), Path.Combine(ModsPath, name));
+                return true;
+            }
+            else if (nativePCs.Count == 0)
+            {
+                logStream.Warning("No nativePC found.");
+                if (MessageBox.Show("No nativePC found, add the entire file as the nativePC folder ?", "Simple MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    MoveDirectory(path, Path.Combine(ModsPath, name));
                     return true;
                 }
                 else
-                {
-                    InstallMod(dir, name);
-                }
+                    return false;
             }
-            return false;
+            else
+            {
+                var dialog = new nativePcPicker(nativePCs.Select(str => str.Substring(path.Length + 1)));
+                if (dialog.ShowDialog() == true)
+                {
+                    MoveDirectory(Path.Combine(path, dialog.Value), Path.Combine(ModsPath, name));
+                    return true;
+                }
+                else
+                    return false;
+            }
         }
 
         public static void ReloadTheme()
@@ -162,7 +208,8 @@ namespace MhwModManager
             {
                 logStream.Log("Updating modlist...");
                 // This list contain the ModInfos and the folder name of each mod
-                Mods = new List<(ModInfo, string)>();
+                Mods = new List<ModInfo>();
+                Categories = new HashSet<string>();
 
                 if (!Directory.Exists(ModsPath))
                     Directory.CreateDirectory(ModsPath);
@@ -172,10 +219,12 @@ namespace MhwModManager
                 foreach (var mod in modFolder.GetDirectories())
                 {
                     var info = new ModInfo();
-                    info.GenInfo(mod.FullName);
-                    Mods.Add((info, mod.Name));
+
+                    info.GenInfo(mod.Name);
+                    Mods.Add(info);
+                    Categories.Add(info.category);
                 }
-                Mods.Sort((left, right) => left.Item1.order.CompareTo(right.Item1.order));
+                Mods.Sort((left, right) => left.order.CompareTo(right.order));
                 logStream.Log("Modlist updated !");
             }
             catch (Exception e) { logStream.Error(e.ToString()); }
@@ -195,6 +244,64 @@ namespace MhwModManager
                     var result = MessageBox.Show("A new version is available, do you want to download it now ?", "SMMM", MessageBoxButton.YesNo, MessageBoxImage.Information);
                     if (result == MessageBoxResult.Yes)
                         System.Diagnostics.Process.Start("https://github.com/oxypomme/SimpleMhwModManager/releases/latest");
+                }
+            }
+            catch (Exception e) { logStream.Error(e.ToString()); }
+        }
+
+        public static void MoveFile(string source, string destination)
+        {
+            try
+            {
+                if (Path.GetPathRoot(source) == Path.GetPathRoot(destination))
+                    File.Move(source, destination);
+                else
+                {
+                    using (var sourceStream = new FileStream(source, FileMode.Open, FileAccess.Read))
+                    using (var destinationStream = new FileStream(destination, FileMode.Create, FileAccess.Write))
+                        sourceStream.CopyTo(destinationStream);
+                    File.Delete(source);
+                }
+            }
+            catch (Exception e) { logStream.Error(e.ToString()); }
+        }
+
+        public static void MoveDirectory(string source, string destination)
+        {
+            try
+            {
+                if (Directory.GetDirectoryRoot(source) == Directory.GetDirectoryRoot(destination))
+                    Directory.Move(source, destination);
+                else
+                {
+                    var requiredFolders = new List<string>();
+                    void GetFolders(string path, ICollection<string> list)
+                    {
+                        foreach (var dir in Directory.GetDirectories(path))
+                        {
+                            var subDirs = Directory.GetDirectories(dir);
+                            if (subDirs.Any())
+                                foreach (var subDir in subDirs)
+                                    GetFolders(subDir, list);
+                            else
+                                list.Add(Path.Combine(destination, dir.Substring(source.Length + 1)));
+                        }
+                    }
+                    GetFolders(source, requiredFolders);
+                    foreach (var folder in requiredFolders)
+                        Directory.CreateDirectory(folder);
+                    var requiredFiles = new List<(string, string)>();
+                    void GetFiles(string path, ICollection<(string, string)> list)
+                    {
+                        foreach (var file in Directory.GetFiles(path))
+                            list.Add((file, Path.Combine(destination, file.Substring(source.Length + 1))));
+                        foreach (var folder in Directory.GetDirectories(path))
+                            GetFiles(folder, list);
+                    }
+                    GetFiles(source, requiredFiles);
+                    foreach (var file in requiredFiles)
+                        MoveFile(file.Item1, file.Item2);
+                    Directory.Delete(source, true);
                 }
             }
             catch (Exception e) { logStream.Error(e.ToString()); }

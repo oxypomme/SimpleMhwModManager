@@ -34,6 +34,10 @@
                 <Button Name="settingsMod" Click="settingsMod_Click" ToolTip="Options" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/settings.png" />
                 </Button>
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button Name="btn_help" Click="btn_help_Click" ToolTip="Help" Width="24" HorizontalAlignment="Left">
+                    <Image Source="icons/help.png" />
+                </Button>
             </StackPanel>
             <Button Name="startGame" Click="startGame_Click" ToolTip="Start game" Width="24" Margin="3" Grid.Column="2">
                 <Image Source="icons/launch.png" />
