@@ -5,6 +5,8 @@
 
 > Simple MHW Mod Manager, or SMHWMM, or WhateverYouLike is a simple mod manager for Monster Hunter World
 
+[Nexus Mods page](https://www.nexusmods.com/monsterhunterworld/mods/2088)
+
 ## NEEDS [Microsoft .NET Framework 4.8](https://dotnet.microsoft.com/download)
 
 Go to the link and then click on "Download .NET Framework Runtime"
