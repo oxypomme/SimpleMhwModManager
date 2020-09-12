@@ -52,7 +52,8 @@ As you can see with the other exemples, a Dark Mode is available !
 ## Changelog
 
 - v0.0.9
-  -
+  - mods with no nativePC supported
+  - mods with multiple nativePC supported
 - v0.0.8
   - Removed useless remove big button (you can remove a mod with the right click)
   - Repair Button (reset settings and mod folder)

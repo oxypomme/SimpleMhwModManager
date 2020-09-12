@@ -96,37 +96,81 @@ namespace MhwModManager
 
                     // Get the name of the extracted folder (without the .zip at the end), not the
                     // full path
-                    if (!InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]))
-                        // If the install fail
-                        MessageBox.Show("nativePC not found... Please check if it's exist in the mod...", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Directory.Delete(tmpFolder, true);
+                    InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]);
+                    try
+                    {
+                        Directory.Delete(tmpFolder, true);
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        //the folder may be missing if it has no nativePC and moved the entire folder, deleting it
+                    }
 
                     GetMods(); // Refresh the modlist
                 }
                 MhwModManager.MainWindow.Instance.UpdateModsList();
             }
-            catch (Exception ex) { logStream.Error(ex.Message); }
+            catch (Exception ex) { logStream.Error(ex); }
+        }
+
+        public static string[] GetRecursiveDirectories(string path)
+        {
+            var paths = new List<string>();
+            void addDir(string p)
+            {
+                paths.Add(p);
+                foreach (var item in Directory.GetDirectories(p))
+                    addDir(item);
+            }
+            addDir(path);
+            return paths.ToArray();
         }
 
         public static bool InstallMod(string path, string name)
         {
-            foreach (var dir in Directory.GetDirectories(path))
+            if (Directory.Exists(Path.Combine(ModsPath, name)))
+            // If the mod is installed
             {
-                if (dir.Equals(Path.Combine(path, "nativePC"), StringComparison.OrdinalIgnoreCase))
+                MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+
+            var nativePCs = new List<string>();
+            foreach (var dir in GetRecursiveDirectories(path))
+            {
+                if (Path.GetFileName(dir).Equals("nativePC", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!Directory.Exists(Path.Combine(ModsPath, name)))
-                        // If the mod isn't installed
-                        MoveDirectory(dir, Path.Combine(ModsPath, name));
-                    else
-                        MessageBox.Show("This mod is already installed", "Simple MHW Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    nativePCs.Add(dir);
+                    logStream.Log(Path.Combine(name, dir.Substring(path.Length + 1)) + " found.");
+                }
+            }
+            if (nativePCs.Count == 1)
+            {
+                MoveDirectory(nativePCs.First(), Path.Combine(ModsPath, name));
+                return true;
+            }
+            else if (nativePCs.Count == 0)
+            {
+                logStream.Warning("No nativePC found.");
+                if (MessageBox.Show("No nativePC found, add the entire file as the nativePC folder ?", "Simple MHW Mod Manager", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    MoveDirectory(path, Path.Combine(ModsPath, name));
                     return true;
                 }
                 else
-                {
-                    InstallMod(dir, name);
-                }
+                    return false;
             }
-            return false;
+            else
+            {
+                var dialog = new nativePcPicker(nativePCs.Select(str => str.Substring(path.Length + 1)));
+                if (dialog.ShowDialog() == true)
+                {
+                    MoveDirectory(Path.Combine(path, dialog.Value), Path.Combine(ModsPath, name));
+                    return true;
+                }
+                else
+                    return false;
+            }
         }
 
         public static void ReloadTheme()
