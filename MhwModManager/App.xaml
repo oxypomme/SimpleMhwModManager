@@ -19,7 +19,7 @@
                         <ContextMenu>
                             <MenuItem Tag="rem">
                                 <MenuItem.Header>
-                                    <TextBlock Margin="10,3,10,0">Remove Mod</TextBlock>
+                                    <TextBlock Margin="10,3,10,0" FontStyle="Normal">Remove Mod</TextBlock>
                                 </MenuItem.Header>
                                 <MenuItem.Icon>
                                     <Image Source="icons/remove.png" />
@@ -27,7 +27,7 @@
                             </MenuItem>
                             <MenuItem Tag="edit">
                                 <MenuItem.Header>
-                                    <TextBlock Margin="10,3,10,0">Edit Mod</TextBlock>
+                                    <TextBlock Margin="10,3,10,0" FontStyle="Normal">Edit Mod</TextBlock>
                                 </MenuItem.Header>
                                 <MenuItem.Icon>
                                     <Image Source="icons/edit.png" />

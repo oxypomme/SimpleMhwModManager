@@ -44,6 +44,7 @@
                  PreviewMouseLeftButtonUp="modListBox_PreviewMouseLeftButtonUp"
                  PreviewMouseMove="modListBox_PreviewMouseMove"
                  DragEnter="modListBox_DragEnter">
+            <local:ModCheckBox ModName="DummyMod" Category="IUT bro" />
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="addModContext" Click="addMod_Click">

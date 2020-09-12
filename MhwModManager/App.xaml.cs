@@ -25,8 +25,9 @@ namespace MhwModManager
         public static string ModsPath = Path.Combine(AppData, "mods");
         public static Setting Settings = new Setting();
         public static string SettingsPath = Path.Combine(AppData, "settings.json");
-        public static List<(ModInfo, string)> Mods;
+        public static List<ModInfo> Mods;
         public static LogStream logStream;
+        public static HashSet<string> Categories;
 
         public App()
         {
@@ -207,7 +208,8 @@ namespace MhwModManager
             {
                 logStream.Log("Updating modlist...");
                 // This list contain the ModInfos and the folder name of each mod
-                Mods = new List<(ModInfo, string)>();
+                Mods = new List<ModInfo>();
+                Categories = new HashSet<string>();
 
                 if (!Directory.Exists(ModsPath))
                     Directory.CreateDirectory(ModsPath);
@@ -217,10 +219,12 @@ namespace MhwModManager
                 foreach (var mod in modFolder.GetDirectories())
                 {
                     var info = new ModInfo();
-                    info.GenInfo(mod.FullName);
-                    Mods.Add((info, mod.Name));
+
+                    info.GenInfo(mod.Name);
+                    Mods.Add(info);
+                    Categories.Add(info.category);
                 }
-                Mods.Sort((left, right) => left.Item1.order.CompareTo(right.Item1.order));
+                Mods.Sort((left, right) => left.order.CompareTo(right.order));
                 logStream.Log("Modlist updated !");
             }
             catch (Exception e) { logStream.Error(e.ToString()); }
