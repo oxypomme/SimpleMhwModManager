@@ -23,6 +23,22 @@
                 <Button Name="addMod" Click="addMod_Click" ToolTip="Add Mod" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/add.png" />
                 </Button>
+                <Button Name="addAdvancedMod" ToolTip="Add advanced Mod" Click="addAdvancedMod_Click"
+                        Width="8" ContextMenuService.Placement="Bottom">
+                    <Image Source="icons/dropArrow.png" Stretch="None" />
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Name="addRootModContext" Click="addRootMod_Click">
+                                <MenuItem.Header>
+                                    <TextBlock Text="Root Mod (like Stracker)" />
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="icons/add.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 <Button Name="refreshMod" Click="refreshMod_Click" ToolTip="Update the modlist" Width="24" HorizontalAlignment="Left">
                     <Image Source="icons/refresh.png" />

@@ -19,13 +19,24 @@ namespace MhwModManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Public Fields
+
         public static MainWindow Instance;
+
+        #endregion Public Fields
+
+        #region Private Fields
+
         private UIElement _dummyDragSource = new UIElement();
         private bool _isDown;
         private bool _isDragging;
         private UIElement _realDragSource;
         private Point _startPoint;
         private bool isDarkTheme = false;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public MainWindow()
         {
@@ -36,6 +47,10 @@ namespace MhwModManager
 
             App.ReloadTheme();
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void MakeDarkTheme()
         {
@@ -146,6 +161,10 @@ namespace MhwModManager
             catch (Exception e) { App.logStream.Error(e.Message); }
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private static void CleanFolder(string folder)
         {
             DirectoryInfo dir = new DirectoryInfo(folder);
@@ -219,9 +238,25 @@ namespace MhwModManager
                 }
         }
 
+        private void addAdvancedMod_Click(object sender, RoutedEventArgs e)
+        {
+            addAdvancedMod.ContextMenu.PlacementTarget = addAdvancedMod;
+            addAdvancedMod.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            addAdvancedMod.ContextMenu.IsOpen = true;
+        }
+
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
             App.AddMods();
+        }
+
+        private void addRootMod_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void btn_help_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Not Implemented yet", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private bool CheckFiles(string pathFirstMod, string pathSecondMod)
@@ -474,9 +509,6 @@ namespace MhwModManager
             App.logStream.Close();
         }
 
-        private void btn_help_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Not Implemented yet", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+        #endregion Private Methods
     }
 }
