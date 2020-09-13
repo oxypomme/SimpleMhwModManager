@@ -66,7 +66,7 @@ namespace MhwModManager
             catch (Exception e) { logStream.Error(e.ToString()); }
         }
 
-        public static void AddMods(params string[] paths)
+        public static void AddMods(bool root = false, params string[] paths)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace MhwModManager
 
                     // Get the name of the extracted folder (without the .zip at the end), not the
                     // full path
-                    InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0]);
+                    InstallMod(tmpFolder, splittedPath[splittedPath.GetLength(0) - 1].Split('.')[0], !root);
                     try
                     {
                         Directory.Delete(tmpFolder, true);
@@ -126,7 +126,20 @@ namespace MhwModManager
             return paths.ToArray();
         }
 
-        public static bool InstallMod(string path, string name)
+        public static string[] GetRecursiveFiles(string path)
+        {
+            var paths = new List<string>();
+            void addDir(string p)
+            {
+                paths.AddRange(Directory.GetFiles(p));
+                foreach (var item in Directory.GetDirectories(p))
+                    addDir(item);
+            }
+            addDir(path);
+            return paths.ToArray();
+        }
+
+        public static bool InstallMod(string path, string name, bool lookForNativePC)
         {
             if (Directory.Exists(Path.Combine(ModsPath, name)))
             // If the mod is installed
@@ -136,13 +149,30 @@ namespace MhwModManager
             }
 
             var nativePCs = new List<string>();
-            foreach (var dir in GetRecursiveDirectories(path))
-            {
-                if (Path.GetFileName(dir).Equals("nativePC", StringComparison.OrdinalIgnoreCase))
+            if (lookForNativePC)
+                foreach (var dir in GetRecursiveDirectories(path))
                 {
-                    nativePCs.Add(dir);
-                    logStream.Log(Path.Combine(name, dir.Substring(path.Length + 1)) + " found.");
+                    if (Path.GetFileName(dir).Equals("nativePC", StringComparison.OrdinalIgnoreCase))
+                    {
+                        nativePCs.Add(dir);
+                        logStream.Log(Path.Combine(name, dir.Substring(path.Length + 1)) + " found.");
+                    }
                 }
+            else
+            {
+                Directory.CreateDirectory(Path.Combine(ModsPath, name));
+                MoveDirectory(path, Path.Combine(ModsPath, name, "install"));
+                Directory.CreateDirectory(Path.Combine(ModsPath, name, "uninstall"));
+                foreach (var file in GetRecursiveFiles(Path.Combine(ModsPath, name, "install")))
+                {
+                    var relative = file.Substring(Path.Combine(ModsPath, name, "install").Length + 1);
+                    if (File.Exists(Path.Combine(Settings.settings.mhw_path, relative)))
+                        File.Copy(Path.Combine(Settings.settings.mhw_path, relative), Path.Combine(ModsPath, name, "uninstall", relative));
+                }
+                var info = new ModInfo();
+
+                info.GenInfo(name, null, true);
+                return true;
             }
             if (nativePCs.Count == 1)
             {

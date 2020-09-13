@@ -225,8 +225,7 @@ namespace MhwModManager
             {
                 string temppath = Path.Combine(destDirName, file.Name);
                 if (!file.Name.Equals("mod.info"))
-                    if (!File.Exists(temppath))
-                        file.CopyTo(temppath, false);
+                    file.CopyTo(temppath, true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
@@ -252,6 +251,7 @@ namespace MhwModManager
 
         private void addRootMod_Click(object sender, RoutedEventArgs e)
         {
+            App.AddMods(true);
         }
 
         private void btn_help_Click(object sender, RoutedEventArgs e)
@@ -318,14 +318,27 @@ namespace MhwModManager
                 if ((e.OriginalSource as CheckBox).IsChecked.Value && !mod.activated)
                 {
                     // Install the mod
-                    DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
+                    if (mod.root)
+                        DirectoryCopy(Path.Combine(modPath, "install"), App.Settings.settings.mhw_path, true);
+                    else
+                        DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
                     App.logStream.Log($"{mod.name} installed");
                     isAnyChanges = true;
                 }
                 else if (!(e.OriginalSource as CheckBox).IsChecked.Value && mod.activated)
                 {
                     // Unistalled the mod
-                    DeleteMod(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                    if (!mod.root)
+                        DeleteMod(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                    else
+                    {
+                        foreach (var file in App.GetRecursiveFiles(Path.Combine(modPath, "install")))
+                        {
+                            var relative = file.Substring(Path.Combine(modPath, "install").Length + 1);
+                            File.Delete(Path.Combine(App.Settings.settings.mhw_path, relative));
+                            DirectoryCopy(Path.Combine(modPath, "uninstall"), App.Settings.settings.mhw_path, true);
+                        }
+                    }
                     CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                     App.logStream.Log($"{mod.name} unistalled");
                     isAnyChanges = true;
@@ -391,7 +404,7 @@ namespace MhwModManager
             else if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                App.AddMods(files);
+                App.AddMods(false, files);
             }
         }
 
