@@ -7,15 +7,25 @@ namespace MhwModManager
 {
     public class ModInfo
     {
-        public bool activated { get; set; }
-        public string name { get; set; }
-        public int order { get; set; }
-
-        public string category { get; set; }
+        #region Public Fields
 
         [NonSerialized] public string path;
 
-        public void GenInfo(string folderName, int? index = null)
+        #endregion Public Fields
+
+        #region Public Properties
+
+        public bool activated { get; set; }
+        public string category { get; set; }
+        public string name { get; set; }
+        public int order { get; set; }
+        public bool root { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        public void GenInfo(string folderName, int? index = null, bool rootMod = false)
         {
             try
             {
@@ -31,6 +41,7 @@ namespace MhwModManager
 
                     name = folderName;
                     category = "None";
+                    root = rootMod;
 
                     App.logStream.Warning($"Mod {name} info not found");
 
@@ -44,11 +55,11 @@ namespace MhwModManager
                         sets = JsonConvert.DeserializeObject<ModInfo>(file.ReadToEnd());
                         file.Close();
                     }
-
                     name = sets.name;
                     activated = sets.activated;
                     order = sets.order;
                     category = sets.category;
+                    root = sets.root;
                     if (sets.category == null)
                     {
                         // If old version of info mod, add new infos
@@ -75,5 +86,7 @@ namespace MhwModManager
             }
             catch (Exception e) { App.logStream.Error(e.ToString()); }
         }
+
+        #endregion Public Methods
     }
 }

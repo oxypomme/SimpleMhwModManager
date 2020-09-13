@@ -19,13 +19,24 @@ namespace MhwModManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Public Fields
+
         public static MainWindow Instance;
+
+        #endregion Public Fields
+
+        #region Private Fields
+
         private UIElement _dummyDragSource = new UIElement();
         private bool _isDown;
         private bool _isDragging;
         private UIElement _realDragSource;
         private Point _startPoint;
         private bool isDarkTheme = false;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public MainWindow()
         {
@@ -36,6 +47,10 @@ namespace MhwModManager
 
             App.ReloadTheme();
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void MakeDarkTheme()
         {
@@ -146,6 +161,10 @@ namespace MhwModManager
             catch (Exception e) { App.logStream.Error(e.Message); }
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private static void CleanFolder(string folder)
         {
             DirectoryInfo dir = new DirectoryInfo(folder);
@@ -206,8 +225,7 @@ namespace MhwModManager
             {
                 string temppath = Path.Combine(destDirName, file.Name);
                 if (!file.Name.Equals("mod.info"))
-                    if (!File.Exists(temppath))
-                        file.CopyTo(temppath, false);
+                    file.CopyTo(temppath, true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
@@ -219,9 +237,26 @@ namespace MhwModManager
                 }
         }
 
+        private void addAdvancedMod_Click(object sender, RoutedEventArgs e)
+        {
+            addAdvancedMod.ContextMenu.PlacementTarget = addAdvancedMod;
+            addAdvancedMod.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            addAdvancedMod.ContextMenu.IsOpen = true;
+        }
+
         private void addMod_Click(object sender, RoutedEventArgs e)
         {
             App.AddMods();
+        }
+
+        private void addRootMod_Click(object sender, RoutedEventArgs e)
+        {
+            App.AddMods(true);
+        }
+
+        private void btn_help_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Not Implemented yet", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private bool CheckFiles(string pathFirstMod, string pathSecondMod)
@@ -283,14 +318,27 @@ namespace MhwModManager
                 if ((e.OriginalSource as CheckBox).IsChecked.Value && !mod.activated)
                 {
                     // Install the mod
-                    DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
+                    if (mod.root)
+                        DirectoryCopy(Path.Combine(modPath, "install"), App.Settings.settings.mhw_path, true);
+                    else
+                        DirectoryCopy(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"), true);
                     App.logStream.Log($"{mod.name} installed");
                     isAnyChanges = true;
                 }
                 else if (!(e.OriginalSource as CheckBox).IsChecked.Value && mod.activated)
                 {
                     // Unistalled the mod
-                    DeleteMod(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                    if (!mod.root)
+                        DeleteMod(modPath, Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
+                    else
+                    {
+                        foreach (var file in App.GetRecursiveFiles(Path.Combine(modPath, "install")))
+                        {
+                            var relative = file.Substring(Path.Combine(modPath, "install").Length + 1);
+                            File.Delete(Path.Combine(App.Settings.settings.mhw_path, relative));
+                            DirectoryCopy(Path.Combine(modPath, "uninstall"), App.Settings.settings.mhw_path, true);
+                        }
+                    }
                     CleanFolder(Path.Combine(App.Settings.settings.mhw_path, "nativePC"));
                     App.logStream.Log($"{mod.name} unistalled");
                     isAnyChanges = true;
@@ -356,7 +404,7 @@ namespace MhwModManager
             else if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                App.AddMods(files);
+                App.AddMods(false, files);
             }
         }
 
@@ -474,9 +522,6 @@ namespace MhwModManager
             App.logStream.Close();
         }
 
-        private void btn_help_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Not Implemented yet", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+        #endregion Private Methods
     }
 }
